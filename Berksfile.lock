@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "poise-ruby": {
+      "locked_version": "1.0.0",
+      "path": "."
+    },
+    "poise": {
+      "locked_version": "1.0.1",
+      "git": "git://github.com/poise/poise.git",
+      "ref": "012ceb7dcbb2a3982a172e2019d92d9ef051bd36"
+    },
+    "apt": {
+      "locked_version": "2.3.4"
+    },
+    "yum": {
+      "locked_version": "3.0.4"
+    }
+  }
+}
