@@ -1,7 +1,7 @@
 #
 # Author:: Noah Kantrowitz <noah@coderanger.net>
 #
-# Copyright 2013, Balanced, Inc.
+# Copyright 2013, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,12 +16,5 @@
 # limitations under the License.
 #
 
-source 'https://api.berkshelf.com'
-
-metadata
-
-cookbook 'poise', github: 'poise/poise'
-
-group :test do
-  cookbook 'poise-ruby_test', path: './test/cookbooks/poise-ruby_test'
-end
+# Install lsb-release because Debian 6 doesn't by default and serverspec requires it
+package 'lsb-release'

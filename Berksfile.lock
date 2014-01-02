@@ -9,6 +9,10 @@
       "git": "git://github.com/poise/poise.git",
       "ref": "012ceb7dcbb2a3982a172e2019d92d9ef051bd36"
     },
+    "poise-ruby_test": {
+      "locked_version": "0.0.0",
+      "path": "./test/cookbooks/poise-ruby_test"
+    },
     "apt": {
       "locked_version": "2.3.4"
     },
