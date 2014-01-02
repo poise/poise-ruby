@@ -20,9 +20,10 @@ to your `$PATH` for commands and init scripts.
 ```ruby
 gem_package 'bundler' do
   gem_binary '/opt/ruby-210/bin/gem'
+  options '--bindir /opt/ruby-210/bin'
 end
 
-execute 'bundle install' do
+execute '/opt/ruby-210/bin/bundle install' do
   cwd '/srv/myapp'
   environment 'PATH' => "/opt/ruby-210/bin:#{ENV['PATH']}"
 end
@@ -75,3 +76,4 @@ $ apt-key adv --keyserver hkp://pgp.mit.edu --recv 594F6D7656399B5C
 $ sudo apt-get update
 $ sudo apt-get install ruby-210
 ```
+
