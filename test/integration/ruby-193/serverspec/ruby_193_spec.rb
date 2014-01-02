@@ -51,5 +51,5 @@ describe command('/opt/ruby-193/bin/ruby --version') do
 end
 
 describe command('/opt/ruby-193/bin/gem --version') do
-  its(:stdout) { should match(/^1\.8/) }
+  its(:stdout) { should match(/^2\.0/) }
 end
