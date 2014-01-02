@@ -73,9 +73,15 @@ class Chef
 
     def install_apt_repository
       raise "32-bit packages are not supported" unless node['kernel']['machine'] == 'x86_64'
+      codename = if node['lsb']['codename']
+        node['lsb']['codename']
+      elsif node['platform'] == 'debian' && node['platform_version'].start_with?('6.')
+        # Debian 6 doesn't install /etc/lsb-release by default so ohai has no data for it
+        'squeeze'
+      end
       apt_repository "poise-ruby" do
         uri 'http://ruby.poise.io'
-        distribution node['lsb']['codename']
+        distribution codename
         components ['main']
         arch 'amd64'
         keyserver 'hkp://pgp.mit.edu'
