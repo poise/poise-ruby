@@ -6,7 +6,11 @@ provisioner:
   name: chef_solo
 
 platforms:
-  - name: ubuntu-12.04
+- name: ubuntu-12.04
+- name: ubuntu-10.04
+- name: ubuntu-13.10
+- name: debian-7
+- name: debian-6
 
 suites:
 - name: default
