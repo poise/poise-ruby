@@ -21,15 +21,19 @@ class Chef
     include Poise
     actions(:upgrade, :install, :remove)
 
-    attribute(:package_name, name_attribute: true)
+    attribute(:flavor, name_attribute: true)
     attribute(:version, kind_of: String)
+
+    def package_name
+      "poise-#{flavor}"
+    end
   end
 
   class Provider::PoiseRuby < Provider
     include Poise
 
     def action_upgrade
-      converge_by("upgrade #{new_resource.package_name} from ruby.poise.io") do
+      converge_by("upgrade #{new_resource.flavor} from ruby.poise.io") do
         notifying_block do
           install_repository
           upgrade_package
@@ -38,7 +42,7 @@ class Chef
     end
 
     def action_install
-      converge_by("install #{new_resource.package_name} from ruby.poise.io") do
+      converge_by("install #{new_resource.flavor} from ruby.poise.io") do
         notifying_block do
           install_repository
           install_package
@@ -47,7 +51,7 @@ class Chef
     end
 
     def action_remove
-      converge_by("remove #{new_resource.package_name} from ruby.poise.io") do
+      converge_by("remove #{new_resource.flavor} from ruby.poise.io") do
         notifying_block do
           remove_repository
           remove_package
@@ -72,7 +76,6 @@ class Chef
     end
 
     def install_apt_repository
-      raise "32-bit packages are not supported" unless node['kernel']['machine'] == 'x86_64'
       codename = if node['lsb']['codename']
         node['lsb']['codename']
       elsif node['platform'] == 'debian' && node['platform_version'].start_with?('6.')
@@ -83,7 +86,6 @@ class Chef
         uri 'http://ruby.poise.io'
         distribution codename
         components ['main']
-        arch 'amd64'
         keyserver 'hkp://pgp.mit.edu'
         key '594F6D7656399B5C'
       end

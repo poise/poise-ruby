@@ -20,7 +20,6 @@ to your `$PATH` for commands and init scripts.
 ```ruby
 gem_package 'bundler' do
   gem_binary '/opt/ruby-210/bin/gem'
-  options '--bindir /opt/ruby-210/bin'
 end
 
 execute '/opt/ruby-210/bin/bundle install' do
@@ -71,8 +70,8 @@ So maybe Chef isn't your cup of tea? No problem.
 For Debian-related distributions:
 
 ```bash
-$ echo 'deb [arch=amd64] http://ruby.poise.io precise main' | sudo tee /etc/apt/sources.list.d/poise-ruby.list
-$ apt-key adv --keyserver hkp://pgp.mit.edu --recv 594F6D7656399B5C
+$ sudo apt-add-repository http://ruby.poise.io
+$ sudo apt-key adv --keyserver hkp://pgp.mit.edu --recv 594F6D7656399B5C
 $ sudo apt-get update
 $ sudo apt-get install ruby-210
 ```
