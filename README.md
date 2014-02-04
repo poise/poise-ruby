@@ -18,12 +18,20 @@ Add `recipe[poise-ruby]` to your application role, and add `/opt/ruby-210/bin`
 to your `$PATH` for commands and init scripts.
 
 ```ruby
+
+# pick the version of ruby you want to install
+poise_ruby 'ruby-210' do
+  version '2.1.0'
+end
+
+# install a specific gem, in this case bundler
 gem_package 'bundler' do
   gem_binary '/opt/ruby-210/bin/gem'
 end
 
+# optionally bundle install your application
 execute '/opt/ruby-210/bin/bundle install' do
-  cwd '/srv/myapp'
+  cwd '/path/to/your/app'
   environment 'PATH' => "/opt/ruby-210/bin:#{ENV['PATH']}"
 end
 ```
