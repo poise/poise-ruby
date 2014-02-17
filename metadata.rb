@@ -28,3 +28,19 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 depends 'apt'
 depends 'poise'
 depends 'yum'
+
+recipe 'poise-ruby', "Installs the flavor of Ruby defined by node['poise-ruby']['ruby']."
+recipe 'poise-ruby::ruby-210', 'Installs Ruby 2.1.0.'
+recipe 'poise-ruby::ruby-200', 'Installs Ruby 2.0.0.'
+recipe 'poise-ruby::ruby-200-gems-21', 'Installs Ruby 2.0.0 with Rubygems 2.1.'
+recipe 'poise-ruby::ruby-200-gems-20', 'Installs Ruby 2.0.0 with Rubygems 2.0.'
+recipe 'poise-ruby::ruby-193', 'Installs Ruby 1.9.3.'
+recipe 'poise-ruby::ruby-193-gems-20', 'Installs Ruby 1.9.3 with Rubygems 2.0.'
+recipe 'poise-ruby::ruby-193-gems-18', 'Installs Ruby 1.9.3 with Rubygems 1.8.'
+
+attribute 'poise-ruby/ruby',
+          :description => 'Flavor of Ruby to install by default (default: ruby-210).',
+          :default => 'ruby-210'
+
+attribute 'poise-ruby/version',
+          :description => 'Version of the Ruby package to install. By default, the latest is installed.'
