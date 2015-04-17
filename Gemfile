@@ -1,7 +1,5 @@
 #
-# Author:: Noah Kantrowitz <noah@coderanger.net>
-#
-# Copyright 2013, Noah Kantrowitz
+# Copyright 2015, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,11 +14,20 @@
 # limitations under the License.
 #
 
-source 'https://rubygems.org'
+source 'https://rubygems.org/'
 
-gem 'test-kitchen', github: 'test-kitchen/test-kitchen'
-gem 'berkshelf', github: 'berkshelf/berkshelf'
-gem 'kitchen-rackspace', github: 'RoboticCheese/kitchen-rackspace'
-gem 'kitchen-vagrant'
-gem 'vagrant-wrapper'
-gem 'foodcritic', '>= 3.0.3'
+gemspec path: File.expand_path('..', __FILE__)
+
+def dev_gem(name, path: File.join('..', name), github: "poise/#{name}")
+  github = "#{github}/#{name}" unless github.include?('/')
+  path = File.expand_path(File.join('..', path), __FILE__)
+  if File.exist?(path)
+    gem name, path: path
+  else
+    gem name, github: github
+  end
+end
+
+dev_gem 'halite'
+dev_gem 'poise'
+dev_gem 'poise-boiler'

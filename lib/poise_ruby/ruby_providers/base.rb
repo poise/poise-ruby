@@ -14,14 +14,28 @@
 # limitations under the License.
 #
 
-source 'https://supermarket.chef.io/'
-extension 'halite'
+require 'chef/provider'
+require 'poise'
 
-# Force the rebuild every time for development.
-cookbook 'poise', gem: 'poise'
-cookbook 'poise-ruby', gem: 'poise-ruby'
+require 'poise_ruby/resources/ruby'
 
-group :test do
-  cookbook 'poise-ruby_test', path: 'test/cookbooks/poise-ruby_test'
-  cookbook 'apt'
+
+module PoiseRuby
+  module RubyProviders
+    class Base < Chef::Provider
+      include Poise(inversion: PoiseRuby::Resources::Ruby::Resource)
+
+      def action_install
+        raise NotImplementedError
+      end
+
+      def action_uninstall
+        raise NotImplementedError
+      end
+
+      def bin_dir
+        raise NotImplementedError
+      end
+    end
+  end
 end

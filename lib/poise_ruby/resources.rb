@@ -14,14 +14,14 @@
 # limitations under the License.
 #
 
-source 'https://supermarket.chef.io/'
-extension 'halite'
+require 'poise_ruby/resources/ruby'
+require 'poise_ruby/resources/ruby_execute'
 
-# Force the rebuild every time for development.
-cookbook 'poise', gem: 'poise'
-cookbook 'poise-ruby', gem: 'poise-ruby'
 
-group :test do
-  cookbook 'poise-ruby_test', path: 'test/cookbooks/poise-ruby_test'
-  cookbook 'apt'
+module PoiseRuby
+  # Chef resources and providers for poise-ruby.
+  #
+  # @since 2.0.0
+  module Resources
+  end
 end

@@ -14,14 +14,30 @@
 # limitations under the License.
 #
 
-source 'https://supermarket.chef.io/'
-extension 'halite'
+require 'poise_ruby/error'
+require 'poise_ruby/ruby_providers/base'
 
-# Force the rebuild every time for development.
-cookbook 'poise', gem: 'poise'
-cookbook 'poise-ruby', gem: 'poise-ruby'
 
-group :test do
-  cookbook 'poise-ruby_test', path: 'test/cookbooks/poise-ruby_test'
-  cookbook 'apt'
+module PoiseRuby
+  module RubyProviders
+    class Chef < Base
+      provides(:chef)
+
+      def action_install
+        # No-op, already installed!
+      end
+
+      def action_uninstall
+        raise PoiseRuby::Error.new("You cannot uninstall Chef's Ruby.")
+      end
+
+      def bin_dir
+        if options['gem']
+          Gem.bindir
+        else
+          RbConfig::CONFIG['bindir']
+        end
+      end
+    end
+  end
 end

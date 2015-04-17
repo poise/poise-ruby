@@ -1,41 +1,8 @@
 ---
-driver:
-  name: vagrant
-
-provisioner:
-  name: chef_solo
-
-platforms:
-- name: ubuntu-12.04
-- name: ubuntu-10.04
-- name: ubuntu-13.10
-- name: debian-7
-- name: debian-6
-  run_list:
-  - recipe[poise-ruby_test::debian-6]
+#<% require 'poise_boiler' %>
+<%= PoiseBoiler.kitchen(platforms: 'linux') %>
 
 suites:
 - name: default
   run_list:
-  - recipe[poise-ruby]
-- name: ruby-210
-  run_list:
-  - recipe[poise-ruby::ruby-210]
-- name: ruby-200
-  run_list:
-  - recipe[poise-ruby::ruby-200]
-- name: ruby-200-gems-20
-  run_list:
-  - recipe[poise-ruby::ruby-200-gems-20]
-- name: ruby-200-gems-21
-  run_list:
-  - recipe[poise-ruby::ruby-200-gems-21]
-- name: ruby-193
-  run_list:
-  - recipe[poise-ruby::ruby-193]
-- name: ruby-193-gems-18
-  run_list:
-  - recipe[poise-ruby::ruby-193-gems-18]
-- name: ruby-193-gems-20
-  run_list:
-  - recipe[poise-ruby::ruby-193-gems-20]
+  - recipe[poise-ruby_test]
