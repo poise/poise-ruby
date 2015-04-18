@@ -20,23 +20,33 @@ require 'poise_ruby/ruby_providers/base'
 
 module PoiseRuby
   module RubyProviders
+    # Inversion provider for the `ruby` resource to use whatever Ruby is
+    # currently running, generally Chef's omnibus-d Ruby.
+    #
+    # @since 2.0.0
+    # @provides chef
     class Chef < Base
       provides(:chef)
 
+      # The `install` action for the `ruby_runtime` resource.
+      #
+      # @return [void]
       def action_install
         # No-op, already installed!
       end
 
+      # The `uninstall` action for the `ruby_runtime` resource.
+      #
+      # @return [void]
       def action_uninstall
         raise PoiseRuby::Error.new("You cannot uninstall Chef's Ruby.")
       end
 
-      def bin_dir
-        if options['gem']
-          Gem.bindir
-        else
-          RbConfig::CONFIG['bindir']
-        end
+      # The path to the running Ruby binary as determined via RbConfig.
+      #
+      # @return [String]
+      def ruby_binary
+        Gem.ruby
       end
     end
   end

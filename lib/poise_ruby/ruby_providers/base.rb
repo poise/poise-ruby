@@ -25,16 +25,40 @@ module PoiseRuby
     class Base < Chef::Provider
       include Poise(inversion: PoiseRuby::Resources::RubyRuntime::Resource)
 
+      # The `install` action for the `ruby_runtime` resource.
+      #
+      # @abstract
+      # @return [void]
       def action_install
         raise NotImplementedError
       end
 
+      # The `uninstall` action for the `ruby_runtime` resource.
+      #
+      # @abstract
+      # @return [void]
       def action_uninstall
         raise NotImplementedError
       end
 
-      def bin_dir
+      # The path to the `ruby` binary.
+      #
+      # @abstract
+      # @return [String]
+      def ruby_binary
         raise NotImplementedError
+      end
+
+      # The path to the `gem` binary. Look relative to the
+      # `ruby` binary for a default implementation.
+      #
+      # @return [String]
+      def gem_binary
+        dir, base = ::File.split(ruby_binary)
+        # If this ruby is called something weird, bail out.
+        raise NotImplementedError unless base.start_with?('ruby')
+        # Allow for names like "ruby2.0" -> "gem2.0".
+        ::File.join(dir, base.sub(/^ruby/, 'gem'))
       end
     end
   end
