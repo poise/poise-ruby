@@ -16,5 +16,5 @@
 
 require 'spec_helper'
 
-describe PoiseRuby::Resources::Ruby do
+describe PoiseRuby::Resources::RubyRuntime do
 end
