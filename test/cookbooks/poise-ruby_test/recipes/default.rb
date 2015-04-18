@@ -14,4 +14,28 @@
 # limitations under the License.
 #
 
-ruby_runtime '2'
+# Install lsb-release because Debian 6 doesn't by default and serverspec requires it
+package 'lsb-release' if platform?('debian') && node['platform_version'].start_with?('6')
+
+ruby_runtime 'chef' do
+  provider :chef
+end
+
+ruby_runtime 'any' do
+  version ''
+end
+
+file '/root/poise_ruby_test.rb' do
+  user 'root'
+  group 'root'
+  mode '644'
+  content <<-EOH
+IO.write(ARGV[0], RUBY_VERSION)
+EOH
+end
+
+ruby_execute '/root/poise_ruby_test.rb /root/one'
+
+ruby_execute '/root/poise_ruby_test.rb /root/two' do
+  ruby 'chef'
+end

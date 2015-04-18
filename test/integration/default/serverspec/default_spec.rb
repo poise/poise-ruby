@@ -1,7 +1,5 @@
 #
-# Author:: Noah Kantrowitz <noah@coderanger.net>
-#
-# Copyright 2013, Noah Kantrowitz
+# Copyright 2015, Noah Kantrowitz
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,39 +15,13 @@
 #
 
 require 'serverspec'
-include Serverspec::Helper::Exec
-include Serverspec::Helper::DetectOS
+set :backend, :exec
 
-describe file('/opt/ruby-210') do
-  it do
-    should be_directory
-    should be_owned_by('root')
-    should be_grouped_into('root')
-    should_not be_writable.by('others')
-  end
+describe file('/root/one') do
+  it { is_expected.to be_a_file }
 end
 
-describe file('/opt/ruby-210/bin') do
-  it do
-    should be_directory
-    should be_owned_by('root')
-    should be_grouped_into('root')
-    should_not be_writable.by('others')
-  end
-end
-
-describe file('/opt/ruby-210/bin/ruby') do
-  it { should be_executable }
-end
-
-describe file('/opt/ruby-210/bin/gem') do
-  it { should be_executable }
-end
-
-describe command('/opt/ruby-210/bin/ruby --version') do
-  its(:stdout) { should match(/^ruby 2\.1\.0/) }
-end
-
-describe command('/opt/ruby-210/bin/gem --version') do
-  its(:stdout) { should match(/^2\.2/) }
+describe file('/root/two') do
+  it { is_expected.to be_a_file }
+  its(:content) { are_expected.to eq '2.1.4' }
 end
