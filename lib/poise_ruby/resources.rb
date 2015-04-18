@@ -14,7 +14,8 @@
 # limitations under the License.
 #
 
-require 'poise_ruby/resources/ruby'
+require 'poise_ruby/resources/bundle_install'
+require 'poise_ruby/resources/ruby_runtime'
 require 'poise_ruby/resources/ruby_execute'
 
 

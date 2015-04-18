@@ -20,19 +20,19 @@ require 'poise'
 
 module PoiseRuby
   module Resources
-    # (see Ruby::Resource)
+    # (see RubyRuntime::Resource)
     # @since 2.0.0
-    module Ruby
-      # A `ruby` resource to manage Ruby installations.
+    module RubyRuntime
+      # A `ruby_runtime` resource to manage Ruby installations.
       #
-      # @provides ruby
+      # @provides ruby_runtime
       # @action install
       # @action uninstall
       # @example
-      #   ruby '2.1.2'
+      #   ruby_runtime '2.1.2'
       class Resource < Chef::Resource
         include Poise(inversion: true, container: true)
-        provides(:ruby)
+        provides(:ruby_runtime)
         actions(:install, :uninstall)
 
         # @!attribute version
@@ -40,14 +40,22 @@ module PoiseRuby
         #   @return [String]
         attribute(:version, kind_of: String, name_attribute: true)
 
-        # The binary directory for this Ruby installation. This should
-        # contain at least `ruby` and `gem` executables.
+        # The path to the `ruby` binary for this Ruby installation.
         #
         # @return [String]
         # @example
-        #   execute "#{resources('ruby[2.2.2]').bin_dir}/ruby myapp.rb"
-        def bin_dir
-          provider_for_action(:bin_dir).pid
+        #   execute "#{resources('ruby[2.2.2]').ruby_binary} myapp.rb"
+        def ruby_binary
+          provider_for_action(:ruby_binary).pid
+        end
+
+        # The path to the `gem` binary for this Ruby installation.
+        #
+        # @return [String]
+        # @example
+        #   execute "#{resources('ruby[2.2.2]').gem_binary} install myapp"
+        def gem_binary
+          provider_for_action(:gem_binary).pid
         end
       end
 

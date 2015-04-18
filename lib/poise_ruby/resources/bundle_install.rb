@@ -21,7 +21,7 @@ require 'chef/resource'
 require 'poise'
 
 require 'poise_ruby/error'
-require 'poise_ruby/resources/ruby'
+require 'poise_ruby/resources/ruby_runtime'
 
 
 module PoiseRuby
@@ -51,7 +51,7 @@ module PoiseRuby
         # @!attribute parent_ruby
         #   Parent ruby installation.
         #   @return [PoiseRuby::Resources::Ruby::Resource, nil]
-        parent_attribute(:ruby, type: PoiseRuby::Resources::Ruby::Resource, optional: true)
+        parent_attribute(:ruby, type: PoiseRuby::Resources::RubyRuntime::Resource, optional: true)
         # @!attribute path
         #   Path to the Gemfile or to a directory that contains a Gemfile.
         #   @return [String]

@@ -22,7 +22,7 @@ require 'chef/provider'
 require 'chef/resource'
 require 'poise'
 
-require 'poise_ruby/resources/ruby'
+require 'poise_ruby/resources/ruby_runtime'
 
 
 module PoiseRuby
@@ -47,7 +47,7 @@ module PoiseRuby
         # @!attribute parent_ruby
         #   Parent ruby installation.
         #   @return [PoiseRuby::Resources::Ruby::Resource, nil]
-        parent_attribute(:ruby, type: PoiseRuby::Resources::Ruby::Resource, optional: true)
+        parent_attribute(:ruby, type: PoiseRuby::Resources::RubyRuntime::Resource, optional: true)
         # @!attribute command
         #   Command to run. This should not include the ruby itself, just the
         #   arguments to it.

@@ -17,13 +17,13 @@
 require 'chef/provider'
 require 'poise'
 
-require 'poise_ruby/resources/ruby'
+require 'poise_ruby/resources/ruby_runtime'
 
 
 module PoiseRuby
   module RubyProviders
     class Base < Chef::Provider
-      include Poise(inversion: PoiseRuby::Resources::Ruby::Resource)
+      include Poise(inversion: PoiseRuby::Resources::RubyRuntime::Resource)
 
       def action_install
         raise NotImplementedError
