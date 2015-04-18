@@ -80,7 +80,7 @@ module PoiseRuby
         # @return [String]
         def default_gem_binary
           if parent_ruby
-            ::File.join(parent_ruby.bin_dir, 'gem')
+            parent_ruby.gem_binary
           else
             which('gem')
           end

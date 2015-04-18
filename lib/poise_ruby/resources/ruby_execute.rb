@@ -75,7 +75,7 @@ module PoiseRuby
         # @return [String]
         def ruby_binary
           if parent_ruby
-            ::File.join(parent_ruby.bin_dir, 'ruby')
+            parent_ruby.ruby_binary
           else
             which('ruby')
           end
