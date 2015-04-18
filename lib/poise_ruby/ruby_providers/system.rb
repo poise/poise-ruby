@@ -42,6 +42,7 @@ module PoiseRuby
       end
 
       def ruby_binary
+        ::File.join('', 'usr', 'bin', find_candidate[:name])
       end
 
       private
