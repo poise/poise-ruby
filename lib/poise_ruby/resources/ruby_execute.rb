@@ -126,7 +126,8 @@ module PoiseRuby
         #
         # @return [void]
         def action_run
-          shell_out!(shell_out_command, shell_out_options)
+          shell_out!(command, command_options)
+          new_resource.updated_by_last_action(true)
         end
 
         private
@@ -134,7 +135,7 @@ module PoiseRuby
         # Command to pass to shell_out.
         #
         # @return [String, Array<String>]
-        def shell_out_command
+        def command
           if new_resource.command.is_a?(Array)
             [new_resource.ruby_binary] + new_resource.command
           else
@@ -145,7 +146,7 @@ module PoiseRuby
         # Options to pass to shell_out.
         #
         # @return [Hash<Symbol, Object>]
-        def shell_out_options
+        def command_options
           {}.tap do |opts|
             opts[:cwd] = new_resource.directory
             opts[:environment] = new_resource.environment
