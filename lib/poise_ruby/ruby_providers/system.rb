@@ -30,14 +30,18 @@ module PoiseRuby
       end
 
       def action_install
+        candidate = find_candidate
         notifying_block do
-          install_package
+          install_package(candidate)
+          install_dev_package(candidate) unless options['no_dev_package']
         end
       end
 
       def action_uninstall
+        candidate = find_candidate
         notifying_block do
-          remove_package
+          remove_package(candidate)
+          remove_dev_package(candidate) unless options['no_dev_package']
         end
       end
 
@@ -45,21 +49,48 @@ module PoiseRuby
         ::File.join('', 'usr', 'bin', find_candidate[:name])
       end
 
+      def install_mode
+        if options['package_upgrade']
+          :upgrade
+        else
+          :install
+        end
+      end
+
       private
 
-      def install_package
-        candidate = find_candidate
-        mode = install_mode
+      def install_package(candidate)
         package candidate[:name] do
-          action mode
+          action install_mode
           version candidate[:version]
         end
       end
 
-      def remove_package
-        install_package.tap do |r|
+      def install_dev_package(candidate)
+        suffix = node.value_for_platform_family(debian: '-dev', rhel: '-devel')
+        return unless suffix
+        dev_package_name = candidate[:name] + suffix
+        if dev_package_name == 'ruby1.9.3-dev'
+          # WTF Ubuntu, seriously.
+          dev_package_name = 'ruby1.9.1-dev'
+        end
+        package dev_package_name do
+          action install_mode
+          version candidate[:version]
+        end
+      end
+
+      def remove_package(candidate)
+        install_package(candidate).tap do |r|
           # Try to purge if on debian-ish.
           r.action(node.platform_family?('debian') ? :purge : :remove)
+        end
+      end
+
+      def remove_dev_package(candidate)
+        install_dev_package(candidate).tap do |r|
+          # Try to purge if on debian-ish.
+          r.action(node.platform_family?('debian') ? :purge : :remove) if r
         end
       end
 
@@ -98,7 +129,8 @@ module PoiseRuby
             # 2.3 is on there for future proofing. Well, at least giving me a
             # buffer zone.
             names.concat(%w{ruby2.3 ruby2.2 ruby2.1 ruby2.0})
-          elsif version == '1' || version == ''
+          end
+          if version == '1' || version == ''
             names.concat(%w{ruby1.9.3 ruby1.9 ruby1.8})
           end
           # For RHEL and friends.
@@ -117,13 +149,7 @@ module PoiseRuby
         nil
       end
 
-      def install_mode
-        if options['package_upgrade']
-          :upgrade
-        else
-          :install
-        end
-      end
+
     end
   end
 end
