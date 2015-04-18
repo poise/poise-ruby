@@ -46,7 +46,7 @@ module PoiseRuby
         # @example
         #   execute "#{resources('ruby[2.2.2]').ruby_binary} myapp.rb"
         def ruby_binary
-          provider_for_action(:ruby_binary).pid
+          provider_for_action(:ruby_binary).ruby_binary
         end
 
         # The path to the `gem` binary for this Ruby installation.
@@ -55,7 +55,7 @@ module PoiseRuby
         # @example
         #   execute "#{resources('ruby[2.2.2]').gem_binary} install myapp"
         def gem_binary
-          provider_for_action(:gem_binary).pid
+          provider_for_action(:gem_binary).gem_binary
         end
       end
 
