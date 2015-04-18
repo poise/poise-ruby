@@ -30,7 +30,9 @@ file '/root/poise_ruby_test.rb' do
   group 'root'
   mode '644'
   content <<-EOH
-IO.write(ARGV[0], RUBY_VERSION)
+File.open(ARGV[0], 'w') do |f|
+  f.write(RUBY_VERSION)
+end
 EOH
 end
 
