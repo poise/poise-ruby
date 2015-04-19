@@ -102,7 +102,7 @@ module PoiseRuby
         end
         names.each do |name|
           version = candidate_version(name)
-          ::Chef::Log.debug("[#{new_resource}] Found candidate version #{version.inspect} for package #{name}")
+          Chef::Log.debug("[#{new_resource}] Found candidate version #{version.inspect} for package #{name}")
           # Trim epoch bullshit.
           if version && version.sub(/^\d:/, '').start_with?(options['version'])
             return {name: name, version: version}
@@ -141,11 +141,11 @@ module PoiseRuby
 
       def candidate_version(package_name)
         return options['package_version'] if options['package_version']
-        resource = ::Chef::Resource.resource_for_node(:package, node).new(package_name, run_context)
+        resource = Chef::Resource.resource_for_node(:package, node).new(package_name, run_context)
         provider = resource.provider_for_action(install_mode)
         provider.load_current_resource
         provider.send(:candidate_version_array)[0]
-      rescue ::Chef::Exceptions::Package
+      rescue Chef::Exceptions::Package
         nil
       end
 

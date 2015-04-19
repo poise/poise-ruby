@@ -25,7 +25,7 @@ module PoiseRuby
     #
     # @since 2.0.0
     # @provides chef
-    class Chef < Base
+    class ChefRuby < Base
       provides(:chef)
 
       # The `install` action for the `ruby_runtime` resource.
