@@ -98,18 +98,18 @@ module PoiseRuby
         names = if options['package_name']
           [options['package_name']]
         else
-          candiate_names(new_resource.version)
+          candiate_names(options['version'])
         end
         names.each do |name|
           version = candidate_version(name)
           ::Chef::Log.debug("[#{new_resource}] Found candidate version #{version.inspect} for package #{name}")
           # Trim epoch bullshit.
-          if version && version.sub(/^\d:/, '').start_with?(new_resource.version)
+          if version && version.sub(/^\d:/, '').start_with?(options['version'])
             return {name: name, version: version}
           end
         end
         # No valid candidate. Sad trombone.
-        raise PoiseRuby::Error.new("Unable to find a candidate package for Ruby version #{new_resource.version}")
+        raise PoiseRuby::Error.new("Unable to find a candidate package for Ruby version #{options['version']}")
       end
 
       def candiate_names(version)
