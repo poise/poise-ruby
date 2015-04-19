@@ -26,7 +26,7 @@ module PoiseRuby
       provides(:system)
 
       def self.provides_auto?(node, resource)
-        true
+        node.platform_family?('debian', 'rhel', 'amazon', 'fedora')
       end
 
       def action_install
