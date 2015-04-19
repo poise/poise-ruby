@@ -25,6 +25,12 @@ module PoiseRuby
     class Base < Chef::Provider
       include Poise(inversion: PoiseRuby::Resources::RubyRuntime::Resource)
 
+      def self.default_inversion_options(node, new_resource)
+        super.merge({
+          version: new_resource.version,
+        })
+      end
+
       # The `install` action for the `ruby_runtime` resource.
       #
       # @abstract
