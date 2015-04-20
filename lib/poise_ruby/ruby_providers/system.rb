@@ -113,7 +113,7 @@ module PoiseRuby
       end
 
       def candiate_names(version)
-        version ||= '' # Mildly sane default
+        version ||= '' # Mildly sane default.
         [].tap do |names|
           # Might as well try it.
           names << "ruby#{version}" if version && !['', '1', '2'].include?(version)
