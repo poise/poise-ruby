@@ -17,11 +17,13 @@
 require 'serverspec'
 set :backend, :exec
 
-describe file('/root/one') do
-  it { is_expected.to be_a_file }
-end
+describe 'ruby_runtime' do
+  describe file('/root/one') do
+    it { is_expected.to be_a_file }
+  end
 
-describe file('/root/two') do
-  it { is_expected.to be_a_file }
-  its(:content) { are_expected.to eq '2.1.4' }
+  describe file('/root/two') do
+    it { is_expected.to be_a_file }
+    its(:content) { are_expected.to eq '2.1.4' }
+  end
 end

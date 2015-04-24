@@ -6,3 +6,4 @@ suites:
 - name: default
   run_list:
   - recipe[poise-ruby_test]
+  - recipe[poise-ruby_test::bundle_install]
