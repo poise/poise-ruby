@@ -29,11 +29,24 @@ module PoiseRuby
         node.platform_family?('debian', 'rhel', 'amazon', 'fedora')
       end
 
+      def self.default_inversion_options(node, resource)
+        super.merge({
+          # Install dev headers?
+          dev_package: true,
+          # Install a separate rubygems package? Only needed for 1.8.
+          rubygems_package: node['platform_family'] == 'rhel' && node['platform_version'].start_with?('6'),
+          # Manual overrides for package name and/or version.
+          package_name: nil,
+          package_version: nil,
+        })
+      end
+
       def action_install
         candidate = find_candidate
         notifying_block do
           install_package(candidate)
-          install_dev_package(candidate) unless options['no_dev_package']
+          install_dev_package(candidate) if options['dev_package']
+          install_rubygems_package if options['rubygems_package']
         end
       end
 
@@ -41,7 +54,8 @@ module PoiseRuby
         candidate = find_candidate
         notifying_block do
           remove_package(candidate)
-          remove_dev_package(candidate) unless options['no_dev_package']
+          remove_dev_package(candidate) if options['dev_package']
+          remove_rubygems_package if options['rubygems_package']
         end
       end
 
@@ -68,6 +82,7 @@ module PoiseRuby
 
       def install_dev_package(candidate)
         suffix = node.value_for_platform_family(debian: '-dev', rhel: '-devel')
+        # Platforms like Arch and Gentoo don't need this anyway.
         return unless suffix
         dev_package_name = candidate[:name] + suffix
         if dev_package_name == 'ruby1.9.3-dev'
@@ -77,6 +92,12 @@ module PoiseRuby
         package dev_package_name do
           action install_mode
           version candidate[:version]
+        end
+      end
+
+      def install_rubygems_package
+        package 'rubygems' do
+          action install_mode
         end
       end
 
@@ -91,6 +112,13 @@ module PoiseRuby
         install_dev_package(candidate).tap do |r|
           # Try to purge if on debian-ish.
           r.action(node.platform_family?('debian') ? :purge : :remove) if r
+        end
+      end
+
+      def remove_rubygems_package
+        install_rubygems_package.tap do |r|
+          # Try to purge if on debian-ish.
+          r.action(node.platform_family?('debian') ? :purge : :remove)
         end
       end
 
