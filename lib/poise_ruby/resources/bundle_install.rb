@@ -43,7 +43,7 @@ module PoiseRuby
       #     gem_path '/usr/local/bin/gem'
       #   end
       class Resource < Chef::Resource
-        include Poise(parent:true)
+        include Poise(parent: true)
         include Chef::Mixin::Which
         provides(:bundle_install)
         actions(:install, :update)
