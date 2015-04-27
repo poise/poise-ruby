@@ -23,7 +23,7 @@ require 'poise_ruby/resources/ruby_runtime'
 module PoiseRuby
   module RubyProviders
     class Base < Chef::Provider
-      include Poise(inversion: PoiseRuby::Resources::RubyRuntime::Resource)
+      include Poise(inversion: :ruby_runtime)
 
       def self.default_inversion_options(node, new_resource)
         super.merge({
