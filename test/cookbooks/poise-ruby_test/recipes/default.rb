@@ -41,3 +41,22 @@ ruby_execute '/root/poise_ruby_test.rb /root/one'
 ruby_execute '/root/poise_ruby_test.rb /root/two' do
   ruby 'chef'
 end
+
+ruby_gem 'rack' do
+  version '1.6.0'
+end
+
+file '/root/poise_ruby_test2.rb' do
+  user 'root'
+  group 'root'
+  mode '644'
+  content <<-EOH
+require 'rubygems'
+require 'rack'
+File.open(ARGV[0], 'w') do |f|
+  f.write(Rack.release)
+end
+EOH
+end
+
+ruby_execute '/root/poise_ruby_test2.rb /root/three'

@@ -26,4 +26,9 @@ describe 'ruby_runtime' do
     it { is_expected.to be_a_file }
     its(:content) { are_expected.to eq '2.1.4' }
   end
+
+  describe file('/root/three') do
+    it { is_expected.to be_a_file }
+    its(:content) { are_expected.to eq '1.5' }
+  end
 end

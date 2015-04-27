@@ -15,8 +15,9 @@
 #
 
 require 'poise_ruby/resources/bundle_install'
-require 'poise_ruby/resources/ruby_runtime'
 require 'poise_ruby/resources/ruby_execute'
+require 'poise_ruby/resources/ruby_gem'
+require 'poise_ruby/resources/ruby_runtime'
 
 
 module PoiseRuby
