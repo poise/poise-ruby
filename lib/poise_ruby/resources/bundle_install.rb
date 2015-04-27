@@ -66,6 +66,9 @@ module PoiseRuby
         attribute(:vendor, kind_of: [TrueClass, String])
         attribute(:without, kind_of: [Array, String])
 
+        # Nicer name for the DSL.
+        alias_method :ruby, :parent_ruby
+
         # Absolute path to the gem binary.
         #
         # @return [String]
