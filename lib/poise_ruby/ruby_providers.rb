@@ -19,7 +19,7 @@ require 'poise_ruby/ruby_providers/system'
 
 
 module PoiseRuby
-  # Inversion providers for the ruby resource.
+  # Inversion providers for the ruby_runtime resource.
   #
   # @since 2.0.0
   module RubyProviders
