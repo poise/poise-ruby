@@ -70,7 +70,7 @@ module PoiseRuby
         # For compatability with Chef's execute resource.
         alias_method :cwd, :directory
 
-        # Nicer name for the hell of it.
+        # Nicer name for the DSL.
         alias_method :ruby, :parent_ruby
 
         # The ruby binary to use for this command.
