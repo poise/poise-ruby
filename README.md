@@ -8,7 +8,8 @@
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 A [Chef](https://www.chef.io/) cookbook to provide a unified interface for
-installing Ruby and running things with it.
+installing Ruby and running things with it. This README covers the 2.x version
+of the cookbook, the 1.x version is very different and no longer supported.
 
 ## Quick Start
 
