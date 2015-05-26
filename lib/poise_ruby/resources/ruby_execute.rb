@@ -16,6 +16,7 @@
 
 require 'chef/config'
 require 'chef/log'
+require 'chef/mash'
 require 'chef/mixin/shell_out'
 require 'chef/mixin/which'
 require 'chef/provider'
@@ -40,7 +41,6 @@ module PoiseRuby
       #   end
       class Resource < Chef::Resource
         include Poise(parent: true)
-        include Chef::Mixin::Which
         provides(:ruby_execute)
         actions(:run)
 
@@ -54,63 +54,23 @@ module PoiseRuby
         #   @return [String, Array<String>]
         attribute(:command, kind_of: [String, Array], name_attribute: true)
         # @!attribute directory
-        #   Working directory for the command. Defaults to the home directory of
-        #   the configured user or / if not found.
+        #   Working directory for the command.
         #   @return [String]
-        attribute(:directory, kind_of: String, default: lazy { default_directory })
+        attribute(:directory, kind_of: String)
         # @!attribute environment
         #   Environment variables for the command.
         #   @return [Hash]
-        attribute(:environment, kind_of: Hash, default: {})
+        attribute(:environment, kind_of: Hash, default: lazy { Mash.new })
         # @!attribute user
         #   User to run the command as.
         #   @return [String]
-        attribute(:user, kind_of: String, default: 'root')
+        attribute(:user, kind_of: String)
 
         # For compatability with Chef's execute resource.
         alias_method :cwd, :directory
 
         # Nicer name for the DSL.
         alias_method :ruby, :parent_ruby
-
-        # The ruby binary to use for this command.
-        #
-        # @return [String]
-        def ruby_binary
-          if parent_ruby
-            parent_ruby.ruby_binary
-          else
-            which('ruby')
-          end
-        end
-
-        private
-
-        # Try to find the home diretory for the configured user. This will fail if
-        # nsswitch.conf was changed during this run such as with LDAP. Defaults to
-        # the system root directory.
-        #
-        # @see #directory
-        # @return [String]
-        def default_directory
-          # For root we always want the system root path.
-          unless user == 'root'
-            # Force a reload in case any users were created earlier in the run.
-            Etc.endpwent
-            home = begin
-              Dir.home(user)
-            rescue ArgumentError
-              nil
-            end
-          end
-          # Better than nothing
-          home || case node['platform_family']
-          when 'windows'
-            ENV.fetch('SystemRoot', 'C:\\')
-          else
-            '/'
-          end
-        end
       end
 
       # The default provider for `ruby_execute`.
@@ -120,6 +80,7 @@ module PoiseRuby
       class Provider < Chef::Provider
         include Poise
         include Chef::Mixin::ShellOut
+        include Chef::Mixin::Which
         provides(:ruby_execute)
 
         # The `run` action for `ruby_execute`. Run the command.
@@ -132,14 +93,26 @@ module PoiseRuby
 
         private
 
+        # The ruby binary to use for this command.
+        #
+        # @return [String]
+        def ruby_binary
+          if new_resource.parent_ruby
+            new_resource.parent_ruby.ruby_binary
+          else
+            which('ruby')
+          end
+        end
+
         # Command to pass to shell_out.
         #
         # @return [String, Array<String>]
         def command
+          ruby_binary = new_resource.parent_ruby ? new_resource.parent_ruby.ruby_binary : which('ruby')
           if new_resource.command.is_a?(Array)
-            [new_resource.ruby_binary] + new_resource.command
+            [ruby_binary] + new_resource.command
           else
-            "#{new_resource.ruby_binary} #{new_resource.command}"
+            "#{ruby_binary} #{new_resource.command}"
           end
         end
 
@@ -148,9 +121,9 @@ module PoiseRuby
         # @return [Hash<Symbol, Object>]
         def command_options
           {}.tap do |opts|
-            opts[:cwd] = new_resource.directory
-            opts[:environment] = new_resource.environment
-            opts[:user] = new_resource.user
+            opts[:cwd] = new_resource.directory if new_resource.directory
+            opts[:environment] = new_resource.environment unless new_resource.environment.empty?
+            opts[:user] = new_resource.user if new_resource.user
             opts[:log_level] = :info
             opts[:log_tag] = new_resource.to_s
             if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info? && !new_resource.sensitive
