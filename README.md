@@ -1,4 +1,4 @@
-# Poise Ruby cookbook
+# Poise-Ruby Cookbook
 
 [![Build Status](https://img.shields.io/travis/poise/poise-ruby.svg)](https://travis-ci.org/poise/poise-ruby)
 [![Gem Version](https://img.shields.io/gem/v/poise-ruby.svg)](https://rubygems.org/gems/poise-ruby)
