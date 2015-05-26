@@ -56,14 +56,43 @@ module PoiseRuby
         #   Path to the Gemfile or to a directory that contains a Gemfile.
         #   @return [String]
         attribute(:path, kind_of: String, name_attribute: true)
+        # @!attribute binstubs
+        #   Enable binstubs. If set to a string it is the path to generate
+        #   stubs in.
+        #   @return [Boolean, String]
         attribute(:binstubs, kind_of: [TrueClass, String])
+        # @!attribute bundler_version
+        #   Version of bundler to install. If unset the latest version is used.
+        #   @return [String]
         attribute(:bundler_version, kind_of: String)
+        # @!attribute deployment
+        #   Enable deployment mode.
+        #   @return [Boolean]
         attribute(:deployment, equal_to: [true, false], default: false)
+        # @!attribute gem_binary
+        #   Path to the gem binary. If unset this uses the `ruby_runtime` parent.
+        #   @return [String]
         attribute(:gem_binary, kind_of: String, default: lazy { default_gem_binary })
+        # @!attribute jobs
+        #   Number of parallel installations to run.
+        #   @return [String, Integer]
         attribute(:jobs, kind_of: [String, Integer])
+        # @!attribute retry
+        #   Number of times to retry failed installations.
+        #   @return [String, Integer]
         attribute(:retry, kind_of: [String, Integer])
+        # @!attribute user
+        #   User to run bundler as.
+        #   @return [String]
         attribute(:user, kind_of: String)
+        # @!attribute vendor
+        #   Enable local vendoring. This maps to the `--path` option in bundler,
+        #   but that attribute name is already used.
+        #   @return [Boolean, String]
         attribute(:vendor, kind_of: [TrueClass, String])
+        # @!attribute without
+        #   Group or groups to not install.
+        #   @return [String, Array<String>]
         attribute(:without, kind_of: [Array, String])
 
         # Nicer name for the DSL.
