@@ -175,6 +175,9 @@ bundle_install '/path/to/Gemfile' do
 end
 ```
 
+The underlying `bundle` command will run on every converge, but notifications
+will only be triggered if a gem is actually installed.
+
 #### Actions
 
 * `:install` – Run `bundle install`. *(default)*
