@@ -25,6 +25,26 @@ module PoiseRuby
     class System < Base
       provides(:system)
 
+      PACKAGES = {
+        debian: {
+          '8' => %w{ruby2.1},
+          '7' => %w{ruby1.9.3 ruby1.9.1 ruby1.8},
+           # Debian 6 has a ruby1.9.1 package that installs 1.9.2, ignoring it for now.
+          '6' => %w{ruby1.8},
+        },
+        ubuntu: {
+          '14.04' => %w{ruby2.0 ruby1.9.3},
+          '12.04' => %w{ruby1.9.3 ruby1.8},
+          '10.04' => %w{ruby1.9.1 ruby1.8},
+        },
+        rhel: {default: 'ruby'},
+        centos: {default: 'ruby'},
+        fedora: {default: 'ruby'},
+        # Amazon Linux does actually have packages ruby18, ruby19, ruby20, ruby21.
+        # Ignoring for now because wooooo non-standard formatting.
+        amazon: {default: 'ruby'},
+      }
+
       def self.provides_auto?(node, resource)
         node.platform_family?('debian', 'rhel', 'amazon', 'fedora')
       end
@@ -38,110 +58,126 @@ module PoiseRuby
           # Manual overrides for package name and/or version.
           package_name: nil,
           package_version: nil,
+          # Set to true to use action :upgrade on all packages.
+          package_upgrade: false,
+          # Enable slow mode.
+          slow: false,
         })
       end
 
       def action_install
-        candidate = find_candidate
-        notifying_block do
-          install_package(candidate)
-          install_dev_package(candidate) if options['dev_package']
-          install_rubygems_package if options['rubygems_package']
-        end
+        install_ruby
       end
 
       def action_uninstall
-        candidate = find_candidate
-        notifying_block do
-          remove_package(candidate)
-          remove_dev_package(candidate) if options['dev_package']
-          remove_rubygems_package if options['rubygems_package']
-        end
+        remove_ruby
       end
 
+      # Output value for the Ruby binary we are installing. Seems to match
+      # package name on all platforms I've checked.
       def ruby_binary
-        ::File.join('', 'usr', 'bin', find_candidate[:name])
-      end
-
-      def install_mode
-        if options['package_upgrade']
-          :upgrade
-        else
-          :install
-        end
+        ::File.join('', 'usr', 'bin', package_name)
       end
 
       private
 
-      def install_package(candidate)
-        package candidate[:name] do
-          action install_mode
-          version candidate[:version]
-        end
+      def install_ruby
+        action = options['package_upgrade'] ? :upgrade : :install
+        run_package_action(package_name, options['version'], action)
       end
 
-      def install_dev_package(candidate)
-        suffix = node.value_for_platform_family(debian: '-dev', rhel: '-devel')
-        # Platforms like Arch and Gentoo don't need this anyway.
+      def remove_ruby
+        action = node.platform_family?('debian') ? :purge : :remove
+        run_package_action(package_name, options['version'], action, check_version: false)
+      end
+
+      # Compute the package name for the development headers.
+      #
+      # @param package_name [String] Package name for the Ruby.
+      # @return [String]
+      def dev_package_name(package_name)
+        return options['dev_package'] if options['dev_package'].is_a?(String)
+        suffix = node.value_for_platform_family(debian: '-dev', rhel: '-devel', fedora: '-devel')
+        # Platforms like Arch and Gentoo don't need this anyway. I've got no
+        # clue how Amazon Linux does this.
         return unless suffix
-        dev_package_name = candidate[:name] + suffix
+        dev_package_name = package_name + suffix
         if dev_package_name == 'ruby1.9.3-dev'
           # WTF Ubuntu, seriously.
           dev_package_name = 'ruby1.9.1-dev'
         end
-        package dev_package_name do
-          action install_mode
-          version candidate[:version]
+        dev_package_name
+      end
+
+      def package_resource(package_name)
+        names = [package_name]
+        if options['dev_package'] && d = dev_package_name(package_name)
+          names << d
+        end
+        if options['rubygems_package']
+          names << (options['rubygems_package'].is_a?(String) ? options['rubygems_package'] : 'rubygems')
+        end
+
+        Chef::Log.debug("[#{new_resource}] Building package resource using #{names.inspect}.")
+        @package_resource ||= Chef::Resource::Package.new(names, run_context).tap do |r|
+          r.version([options['package_version'], options['package_version'], nil])
         end
       end
 
-      def install_rubygems_package
-        package 'rubygems' do
-          action install_mode
-        end
+      def run_package_action(package_name, ruby_version, action, check_version: true)
+        resource = package_resource(package_name)
+        # Reset it so we have a clean baseline.
+        resource.updated_by_last_action(false)
+        # Grab the provider.
+        provider = resource.provider_for_action(action)
+        # Check the candidate version if needed
+        patch_load_current_resource!(provider, ruby_version) if check_version
+        # Run our action.
+        provider.run_action(action)
+        # Check updated flag.
+        new_resource.updated_by_last_action(true) if resource.updated_by_last_action?
       end
 
-      def remove_package(candidate)
-        install_package(candidate).tap do |r|
-          # Try to purge if on debian-ish.
-          r.action(node.platform_family?('debian') ? :purge : :remove)
-        end
-      end
-
-      def remove_dev_package(candidate)
-        install_dev_package(candidate).tap do |r|
-          # Try to purge if on debian-ish.
-          r.action(node.platform_family?('debian') ? :purge : :remove) if r
-        end
-      end
-
-      def remove_rubygems_package
-        install_rubygems_package.tap do |r|
-          # Try to purge if on debian-ish.
-          r.action(node.platform_family?('debian') ? :purge : :remove)
-        end
-      end
-
-      def find_candidate
-        names = if options['package_name']
-          [options['package_name']]
-        else
-          candiate_names(options['version'])
-        end
-        names.each do |name|
-          version = candidate_version(name)
-          Chef::Log.debug("[#{new_resource}] Found candidate version #{version.inspect} for package #{name}")
-          # Trim epoch bullshit.
-          if version && version.sub(/^\d:/, '').start_with?(options['version'])
-            return {name: name, version: version}
+      # Hack a provider object to run our verification code.
+      #
+      # @param provider [Chef::Provider] Provider object to patch.
+      # @param ruby_version [String] Ruby version to check for.
+      # @return [void]
+      def patch_load_current_resource!(provider, ruby_version)
+        # Create a closure module and inject it.
+        provider.extend Module.new do
+          # Patch load_current_resource to run our verification logic after
+          # the normal code.
+          define_method(:load_current_resource) do
+            super().tap do |val|
+              unless candidate_version_array.first && candidate_version_array.first.start_with?(ruby_version)
+                raise PoiseRuby::Error.new("Package #{package_name_array.first} would install #{candidate_version_array.first}, which does not match #{ruby_version}. Please set the package_name or package_version provider options.")
+              end
+            end
           end
         end
+      end
+
+      def package_name
+        # If manually set, use that.
+        return options['package_name'] if options['package_name']
+        # Find package names known to exist.
+        known_packages = node.value_for_platform(PACKAGES)
+        unless known_packages
+          Chef::Log.debug("[#{new_resource}] No known packages for #{node['platform']} #{node['platform_version']}, defaulting to 'ruby'.")
+          known_packages = %w{ruby}
+        end
+        # version nil -> ''.
+        version = options['version'] || ''
+        # Find the first value on candidate_names that is in known_packages.
+        candiate_names(version).each do |name|
+          return name if known_packages.include?(name)
+        end
         # No valid candidate. Sad trombone.
-        raise PoiseRuby::Error.new("Unable to find a candidate package for Ruby version #{options['version']}")
+        raise PoiseRuby::Error.new("Unable to find a candidate package for Ruby version #{version.inspect}. Please set package_name provider options.")
       end
 
       def candiate_names(version)
-        version ||= '' # Mildly sane default.
         [].tap do |names|
           # Might as well try it.
           names << "ruby#{version}" if version && !['', '1', '2'].include?(version)
@@ -163,21 +199,10 @@ module PoiseRuby
             names.concat(%w{ruby1.9.3 ruby1.9 ruby1.8})
           end
           # For RHEL and friends.
-          names << "ruby"
+          names << 'ruby'
           names.uniq!
         end
       end
-
-      def candidate_version(package_name)
-        return options['package_version'] if options['package_version']
-        resource = Chef::Resource.resource_for_node(:package, node).new(package_name, run_context)
-        provider = resource.provider_for_action(install_mode)
-        provider.load_current_resource
-        provider.send(:candidate_version_array)[0]
-      rescue Chef::Exceptions::Package
-        nil
-      end
-
 
     end
   end
