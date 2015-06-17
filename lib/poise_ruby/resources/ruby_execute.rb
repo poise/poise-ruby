@@ -14,13 +14,9 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/log'
-require 'chef/mash'
-require 'chef/mixin/shell_out'
 require 'chef/mixin/which'
-require 'chef/provider'
-require 'chef/resource'
+require 'chef/provider/execute'
+require 'chef/resource/execute'
 require 'poise'
 
 require 'poise_ruby/resources/ruby_runtime'
@@ -39,7 +35,7 @@ module PoiseRuby
       #   ruby_execute 'myapp.rb' do
       #     user 'myuser'
       #   end
-      class Resource < Chef::Resource
+      class Resource < Chef::Resource::Execute
         include Poise(parent: true)
         provides(:ruby_execute)
         actions(:run)
@@ -47,27 +43,7 @@ module PoiseRuby
         # @!attribute parent_ruby
         #   Parent ruby installation.
         #   @return [PoiseRuby::Resources::Ruby::Resource, nil]
-        parent_attribute(:ruby, type: PoiseRuby::Resources::RubyRuntime::Resource, optional: true)
-        # @!attribute command
-        #   Command to run. This should not include the ruby itself, just the
-        #   arguments to it.
-        #   @return [String, Array<String>]
-        attribute(:command, kind_of: [String, Array], name_attribute: true)
-        # @!attribute directory
-        #   Working directory for the command.
-        #   @return [String]
-        attribute(:directory, kind_of: String)
-        # @!attribute environment
-        #   Environment variables for the command.
-        #   @return [Hash]
-        attribute(:environment, kind_of: Hash, default: lazy { Mash.new })
-        # @!attribute user
-        #   User to run the command as.
-        #   @return [String]
-        attribute(:user, kind_of: String)
-
-        # For compatability with Chef's execute resource.
-        alias_method :cwd, :directory
+        parent_attribute(:ruby, type: :ruby_runtime, optional: true)
 
         # Nicer name for the DSL.
         alias_method :ruby, :parent_ruby
@@ -77,19 +53,10 @@ module PoiseRuby
       #
       # @see Resource
       # @provides ruby_execute
-      class Provider < Chef::Provider
+      class Provider < Chef::Provider::Execute
         include Poise
-        include Chef::Mixin::ShellOut
         include Chef::Mixin::Which
         provides(:ruby_execute)
-
-        # The `run` action for `ruby_execute`. Run the command.
-        #
-        # @return [void]
-        def action_run
-          shell_out!(command, command_options)
-          new_resource.updated_by_last_action(true)
-        end
 
         private
 
@@ -108,7 +75,6 @@ module PoiseRuby
         #
         # @return [String, Array<String>]
         def command
-          ruby_binary = new_resource.parent_ruby ? new_resource.parent_ruby.ruby_binary : which('ruby')
           if new_resource.command.is_a?(Array)
             [ruby_binary] + new_resource.command
           else
@@ -116,21 +82,6 @@ module PoiseRuby
           end
         end
 
-        # Options to pass to shell_out.
-        #
-        # @return [Hash<Symbol, Object>]
-        def command_options
-          {}.tap do |opts|
-            opts[:cwd] = new_resource.directory if new_resource.directory
-            opts[:environment] = new_resource.environment unless new_resource.environment.empty?
-            opts[:user] = new_resource.user if new_resource.user
-            opts[:log_level] = :info
-            opts[:log_tag] = new_resource.to_s
-            if STDOUT.tty? && !Chef::Config[:daemon] && Chef::Log.info? && !new_resource.sensitive
-              opts[:live_stream] = STDOUT
-            end
-          end
-        end
       end
     end
   end
