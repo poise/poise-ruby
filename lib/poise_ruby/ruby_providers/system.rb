@@ -37,12 +37,12 @@ module PoiseRuby
           '12.04' => %w{ruby1.9.3 ruby1.8},
           '10.04' => %w{ruby1.9.1 ruby1.8},
         },
-        rhel: {default: 'ruby'},
-        centos: {default: 'ruby'},
-        fedora: {default: 'ruby'},
+        rhel: {default: %w{ruby}},
+        centos: {default: %w{ruby}},
+        fedora: {default: %w{ruby}},
         # Amazon Linux does actually have packages ruby18, ruby19, ruby20, ruby21.
         # Ignoring for now because wooooo non-standard formatting.
-        amazon: {default: 'ruby'},
+        amazon: {default: %w{ruby}},
       }
 
       def self.provides_auto?(node, resource)
