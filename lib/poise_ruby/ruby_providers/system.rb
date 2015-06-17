@@ -60,8 +60,6 @@ module PoiseRuby
           package_version: nil,
           # Set to true to use action :upgrade on all packages.
           package_upgrade: false,
-          # Enable slow mode.
-          slow: false,
         })
       end
 
