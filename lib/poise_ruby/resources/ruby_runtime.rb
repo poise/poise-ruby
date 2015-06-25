@@ -50,6 +50,18 @@ module PoiseRuby
           provider_for_action(:ruby_binary).ruby_binary
         end
 
+        # The environment variables for this Ruby installation. This is an
+        # output property.
+        #
+        # @return [Hash<String, String>]
+        # @example
+        #   execute '/opt/myapp.py' do
+        #     environment resources('ruby_runtime[2.2.2]').ruby_environment
+        #   end
+        def ruby_environment
+          provider_for_action(:ruby_environment).ruby_environment
+        end
+
         # The path to the `gem` binary for this Ruby installation. This is an
         # output property.
         #
