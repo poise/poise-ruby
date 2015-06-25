@@ -145,10 +145,11 @@ module PoiseRuby
         def install_bundler
           # This doesn't use the DSL to keep things simpler and so that a change
           # in the bundler version doesn't trigger a notification on the resource.
-          Chef::Resource::GemPackage.new('bundler', run_context).tap do |r|
+          klass = Chef::Resource.resource_for_node(:ruby_gem, node)
+          klass.new('bundler', run_context).tap do |r|
+            r.parent_ruby(new_resource.parent_ruby)
             r.action(:upgrade) unless new_resource.bundler_version
             r.version(new_resource.bundler_version)
-            r.gem_binary(new_resource.absolute_gem_binary)
             r.run_action(*Array(r.action))
           end
         end
