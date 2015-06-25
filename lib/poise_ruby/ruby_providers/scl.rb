@@ -26,13 +26,13 @@ module PoiseRuby
       include PoiseLanguages::SclProviderMixin
       provides(:scl)
       scl_package('2.2.2', 'rh-ruby22', {
-        ['rhel', 'centos'] => {
+        ['redhat', 'centos'] => {
           '~> 7.0' => 'https://www.softwarecollections.org/en/scls/rhscl/rh-ruby22/epel-7-x86_64/download/rhscl-rh-ruby22-epel-7-x86_64.noarch.rpm',
           '~> 6.0' => 'https://www.softwarecollections.org/en/scls/rhscl/rh-ruby22/epel-6-x86_64/download/rhscl-rh-ruby22-epel-6-x86_64.noarch.rpm',
         },
       })
       scl_package('2.0.0', 'ruby200', {
-        ['rhel', 'centos'] => {
+        ['redhat', 'centos'] => {
           # On CentOS 7, the system package is Ruby 2.0.0 and is newer than the SCL build.
           #'~> 7.0' => 'https://www.softwarecollections.org/en/scls/rhscl/ruby200/epel-7-x86_64/download/rhscl-ruby200-epel-7-x86_64.noarch.rpm',
           '~> 6.0' => 'https://www.softwarecollections.org/en/scls/rhscl/ruby200/epel-6-x86_64/download/rhscl-ruby200-epel-6-x86_64.noarch.rpm',
@@ -43,7 +43,7 @@ module PoiseRuby
         },
       })
       scl_package('1.9.3', 'ruby193', {
-        ['rhel', 'centos'] => {
+        ['redhat', 'centos'] => {
           '~> 7.0' => 'https://www.softwarecollections.org/en/scls/rhscl/ruby193/epel-7-x86_64/download/rhscl-ruby193-epel-7-x86_64.noarch.rpm',
           '~> 6.0' => 'https://www.softwarecollections.org/en/scls/rhscl/ruby193/epel-6-x86_64/download/rhscl-ruby193-epel-6-x86_64.noarch.rpm',
         },
