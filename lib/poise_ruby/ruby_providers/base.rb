@@ -55,6 +55,14 @@ module PoiseRuby
         raise NotImplementedError
       end
 
+      # Output property for environment variables.
+      #
+      # @return [Hash<String, String>]
+      def ruby_environment
+        # No environment variables needed. Rejoice.
+        {}
+      end
+
       # The path to the `gem` binary. Look relative to the
       # `ruby` binary for a default implementation.
       #
