@@ -19,6 +19,7 @@ extension 'halite'
 
 # Force the rebuild every time for development.
 cookbook 'poise', gem: 'poise'
+cookbook 'poise-languages', gem: 'poise-languages'
 cookbook 'poise-ruby', gem: 'poise-ruby'
 
 group :test do
