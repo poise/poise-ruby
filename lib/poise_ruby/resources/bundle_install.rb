@@ -157,7 +157,7 @@ module PoiseRuby
         # Install the gems in the Gemfile.
         def run_bundler(command)
           return converge_by "Run bundle #{command}" if whyrun_mode?
-          cmd = shell_out!(bundler_command(command), environment: {'BUNDLE_GEMFILE' => gemfile_path})
+          cmd = shell_out!(bundler_command(command), environment: ruby_environment.merge('BUNDLE_GEMFILE' => gemfile_path))
           # Look for a line like 'Installing $gemname $version' to know if we did anything.
           if cmd.stdout.include?('Installing')
             new_resource.updated_by_last_action(true)
@@ -170,7 +170,7 @@ module PoiseRuby
         #
         # @return [String]
         def gem_bindir
-          cmd = shell_out!([new_resource.absolute_gem_binary, 'environment'])
+          cmd = shell_out!([new_resource.absolute_gem_binary, 'environment'], environment: ruby_environment)
           # Parse a line like:
           # - EXECUTABLE DIRECTORY: /usr/local/bin
           matches = cmd.stdout.scan(/EXECUTABLE DIRECTORY: (.*)$/).first
@@ -240,6 +240,17 @@ module PoiseRuby
                 path = next_path
               end
             end
+          end
+        end
+
+        # Find the environment variables for the Ruby installation.
+        #
+        # @return [Hash<String, String>]
+        def ruby_environment
+          @ruby_environment ||= if new_resource.parent_ruby
+            new_resource.parent_ruby.ruby_environment
+          else
+            {}
           end
         end
 

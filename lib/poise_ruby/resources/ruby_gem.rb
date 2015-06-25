@@ -72,6 +72,61 @@ module PoiseRuby
       class Provider < Chef::Provider::Package::Rubygems
         include Poise
         provides(:ruby_gem)
+
+        def load_current_resource
+          patch_environment { super }
+        end
+
+        def define_resource_requirements
+          patch_environment { super }
+        end
+
+        def action_install
+          patch_environment { super }
+        end
+
+        def action_upgrade
+          patch_environment { super }
+        end
+
+        def action_remove
+          patch_environment { super }
+        end
+
+        def action_purge
+          patch_environment { super }
+        end
+
+        def action_reconfig
+          patch_environment { super }
+        end
+
+        private
+
+        def patch_environment(&block)
+          environment_to_add = if new_resource.parent_ruby
+            new_resource.parent_ruby.ruby_environment
+          else
+            {}
+          end
+
+          begin
+            old_vars = environment_to_add.inject({}) do |memo, (key, value)|
+              memo[key] = ENV[key]
+              ENV[key] = value
+              memo
+            end
+            block.call
+          ensure
+            old_vars.each do |key, value|
+              if value.nil?
+                ENV.delete(key)
+              else
+                ENV[key] = value
+              end
+            end
+          end
+        end
       end
     end
   end
