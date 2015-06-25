@@ -71,7 +71,8 @@ describe PoiseRuby::Resources::BundleInstall do
 
       context 'with defaults' do
         let(:new_resource) { double(bundler_version: nil, absolute_gem_binary: 'gem') }
-        its(:action) { is_expected.to eq %i{upgrade} }
+        # This is an array on 12.3 and earlier, symbol on 12.4+.
+        it { expect(Array(subject.action)).to eq %i{upgrade} }
         its(:version) { is_expected.to be_nil }
         its(:gem_binary) { is_expected.to eq 'gem' }
       end # /context with defaults
