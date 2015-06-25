@@ -82,6 +82,20 @@ module PoiseRuby
           end
         end
 
+        # Environment variables to pass to shell_out.
+        #
+        # @return [Hash]
+        def environment
+          if new_resource.parent_ruby
+            environment = new_resource.parent_ruby.ruby_environment
+            if new_resource.environment
+              environment = environment.merge(new_resource.environment)
+            end
+          else
+            new_resource.environment
+          end
+        end
+
       end
     end
   end
