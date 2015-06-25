@@ -23,6 +23,7 @@ end
 
 ruby_runtime 'any' do
   version ''
+  provider :system
 end
 
 file '/root/poise_ruby_test.rb' do
@@ -60,3 +61,25 @@ EOH
 end
 
 ruby_execute '/root/poise_ruby_test2.rb /root/three'
+
+if platform_family?('rhel')
+  file '/root/scl'
+
+  ruby_runtime 'scl' do
+    version '2'
+    provider :scl
+  end
+
+  ruby_execute '/root/poise_ruby_test.rb /root/four' do
+    ruby 'scl'
+  end
+
+  ruby_gem 'rack' do
+    version '1.6.0'
+    ruby 'scl'
+  end
+
+  ruby_execute '/root/poise_ruby_test2.rb /root/five' do
+    ruby 'scl'
+  end
+end

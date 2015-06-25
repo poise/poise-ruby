@@ -16,6 +16,7 @@
 
 ruby_runtime 'bundle_install test' do
   version ''
+  provider :system
 end
 
 directory '/opt/bundle1'
@@ -77,4 +78,25 @@ bundle_install '/opt/bundle2/Gemfile again' do
   deployment true
   binstubs true
   notifies :create, 'file[/opt/bundle2/sentinel2]', :immediately
+end
+
+if platform_family?('rhel')
+  ruby_runtime 'bundle_install test scl' do
+    version ''
+    provider :scl
+  end
+
+  directory '/opt/bundle3'
+
+  file '/opt/bundle3/Gemfile' do
+    content <<-EOH
+source 'https://rubygems.org/'
+gem 'rake'
+EOH
+  end
+
+  bundle_install '/opt/bundle3/Gemfile' do
+    ruby 'bundle_install test scl'
+    binstubs true
+  end
 end

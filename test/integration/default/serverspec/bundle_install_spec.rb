@@ -60,4 +60,14 @@ describe 'bundle_install' do
       end
     end
   end
+
+  describe 'scl provider', if: File.exist?('/opt/bundle3') do
+    describe file('/opt/bundle3/bin/rake') do
+      it { is_expected.to be_a_file }
+    end
+
+    describe command('/opt/bundle3/bin/rake --version') do
+      its(:exit_status) { is_expected.to eq 0 }
+    end
+  end
 end

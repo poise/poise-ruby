@@ -31,4 +31,16 @@ describe 'ruby_runtime' do
     it { is_expected.to be_a_file }
     its(:content) { are_expected.to eq '1.5' }
   end
+
+  describe 'scl provider', if: File.exist?('/root/scl') do
+    describe file('/root/four') do
+      it { is_expected.to be_a_file }
+      its(:content) { are_expected.to eq '2.2.2' }
+    end
+
+    describe file('/root/five') do
+      it { is_expected.to be_a_file }
+      its(:content) { are_expected.to eq '1.5' }
+    end
+  end
 end
