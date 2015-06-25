@@ -90,6 +90,7 @@ module PoiseRuby
             if new_resource.environment
               environment = environment.merge(new_resource.environment)
             end
+            environment
           else
             new_resource.environment
           end
