@@ -24,7 +24,7 @@ describe 'ruby_runtime' do
 
   describe file('/root/two') do
     it { is_expected.to be_a_file }
-    its(:content) { are_expected.to eq '2.1.4' }
+    its(:content) { are_expected.to start_with '2.1' }
   end
 
   describe file('/root/three') do
