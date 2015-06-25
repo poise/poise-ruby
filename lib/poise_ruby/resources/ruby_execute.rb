@@ -54,7 +54,6 @@ module PoiseRuby
       # @see Resource
       # @provides ruby_execute
       class Provider < Chef::Provider::Execute
-        include Poise
         include Chef::Mixin::Which
         provides(:ruby_execute)
 
