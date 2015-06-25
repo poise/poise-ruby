@@ -15,6 +15,7 @@
 #
 
 require 'poise_ruby/ruby_providers/chef'
+require 'poise_ruby/ruby_providers/scl'
 require 'poise_ruby/ruby_providers/system'
 
 
@@ -23,5 +24,9 @@ module PoiseRuby
   #
   # @since 2.0.0
   module RubyProviders
+    Chef::Platform::ProviderPriorityMap.instance.priority(:ruby_runtime, [
+      PoiseRuby::RubyProviders::Scl,
+      PoiseRuby::RubyProviders::System,
+    ])
   end
 end
