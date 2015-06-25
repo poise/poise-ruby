@@ -40,20 +40,22 @@ module PoiseRuby
         #   @return [String]
         attribute(:version, kind_of: String, name_attribute: true)
 
-        # The path to the `ruby` binary for this Ruby installation.
+        # The path to the `ruby` binary for this Ruby installation. This is an
+        # output property.
         #
         # @return [String]
         # @example
-        #   execute "#{resources('ruby[2.2.2]').ruby_binary} myapp.rb"
+        #   execute "#{resources('ruby_runtime[2.2.2]').ruby_binary} myapp.rb"
         def ruby_binary
           provider_for_action(:ruby_binary).ruby_binary
         end
 
-        # The path to the `gem` binary for this Ruby installation.
+        # The path to the `gem` binary for this Ruby installation. This is an
+        # output property.
         #
         # @return [String]
         # @example
-        #   execute "#{resources('ruby[2.2.2]').gem_binary} install myapp"
+        #   execute "#{resources('ruby_runtime[2.2.2]').gem_binary} install myapp"
         def gem_binary
           provider_for_action(:gem_binary).gem_binary
         end
