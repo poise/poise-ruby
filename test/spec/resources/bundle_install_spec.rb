@@ -40,7 +40,7 @@ describe PoiseRuby::Resources::BundleInstall do
   end # /describe PoiseRuby::Resources::BundleInstall::Resource
 
   describe PoiseRuby::Resources::BundleInstall::Provider do
-    let(:new_resource) { double() }
+    let(:new_resource) { double('new_resource', parent_ruby: nil) }
     let(:provider) { described_class.new(new_resource, nil) }
 
     describe '#action_install' do
@@ -62,27 +62,42 @@ describe PoiseRuby::Resources::BundleInstall do
     describe '#install_bundler' do
       subject { provider.send(:install_bundler) }
       before do
-        allow(Chef::Resource::GemPackage).to receive(:new).and_wrap_original do |m, *args|
-          m.call(*args).tap do |r|
-            expect(r).to receive(:run_action)
+        allow(Chef::Resource).to receive(:resource_for_node).and_call_original
+        allow(Chef::Resource).to receive(:resource_for_node).with(:ruby_gem, nil) do
+          Class.new(PoiseRuby::Resources::RubyGem::Resource) do
+            def run_action(*args); end
           end
         end
       end
 
       context 'with defaults' do
-        let(:new_resource) { double(bundler_version: nil, absolute_gem_binary: 'gem') }
+        let(:new_resource) { double('new_resource', bundler_version: nil, absolute_gem_binary: 'gem', parent_ruby: nil) }
         # This is an array on 12.3 and earlier, symbol on 12.4+.
         it { expect(Array(subject.action)).to eq %i{upgrade} }
         its(:version) { is_expected.to be_nil }
-        its(:gem_binary) { is_expected.to eq 'gem' }
+        its(:parent_ruby) { is_expected.to be_nil }
       end # /context with defaults
 
       context 'with a specific version' do
-        let(:new_resource) { double(bundler_version: '1.0', absolute_gem_binary: 'gem') }
+        let(:new_resource) { double('new_resource', bundler_version: '1.0', absolute_gem_binary: 'gem', parent_ruby: nil) }
         its(:action) { is_expected.to eq :install }
         its(:version) { is_expected.to eq '1.0' }
-        its(:gem_binary) { is_expected.to eq 'gem' }
+        its(:parent_ruby) { is_expected.to be_nil }
       end # /context with a specific version
+
+      context 'with parent_ruby' do
+        let(:parent_ruby) do
+          double('parent_ruby', ruby_environment: {}, gem_binary: '/test/gem').tap do |r|
+            allow(r).to receive(:is_a?).and_return(false)
+            allow(r).to receive(:is_a?).with(PoiseRuby::Resources::RubyRuntime::Resource).and_return(true)
+          end
+        end
+        let(:new_resource) { double('new_resource', bundler_version: nil, absolute_gem_binary: 'gem', parent_ruby: parent_ruby) }
+        # This is an array on 12.3 and earlier, symbol on 12.4+.
+        it { expect(Array(subject.action)).to eq %i{upgrade} }
+        its(:version) { is_expected.to be_nil }
+        its(:parent_ruby) { is_expected.to eq parent_ruby }
+      end # /context with parent_ruby
     end # /describe #install_bundler
 
     describe '#run_bundler' do
@@ -142,11 +157,11 @@ EOH
     end # /describe #run_bundler
 
     describe '#gem_bin' do
-      let(:new_resource) { double(absolute_gem_binary: '/usr/local/bin/gem') }
+      let(:new_resource) { double('new_resource', absolute_gem_binary: '/usr/local/bin/gem', parent_ruby: nil) }
       let(:gem_environment) { '' }
       subject { provider.send(:gem_bindir) }
       before do
-        expect(provider).to receive(:shell_out!).with(['/usr/local/bin/gem', 'environment']).and_return(double(stdout: gem_environment))
+        expect(provider).to receive(:shell_out!).with(['/usr/local/bin/gem', 'environment'], environment: {}).and_return(double(stdout: gem_environment))
       end
 
       context 'with an Ubuntu 14.04 gem environment' do
@@ -227,7 +242,7 @@ EOH
     describe '#bundler_options' do
       let(:default_options) { %i{binstubs deployment without jobs retry vendor}.inject({}) {|memo, v| memo[v] = nil; memo } }
       let(:options) { {} }
-      let(:new_resource) { double(default_options.merge(options)) }
+      let(:new_resource) { double('new_resource', default_options.merge(options)) }
       subject { provider.send(:bundler_options) }
 
       context 'with binstubs' do
@@ -298,7 +313,7 @@ EOH
     describe '#gemfile_path' do
       let(:path) { '' }
       let(:files) { [] }
-      let(:new_resource) { double(path: path) }
+      let(:new_resource) { double('new_resource', path: path) }
       subject { provider.send(:gemfile_path) }
       before do
         allow(File).to receive(:file?).and_return(false)
