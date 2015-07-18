@@ -31,7 +31,7 @@ end
 
 ### `ruby_runtime`
 
-The `ruby_runtime` resource installs a Ruby.
+The `ruby_runtime` resource installs a Ruby interpreter.
 
 ```ruby
 ruby_runtime 'any' do
@@ -41,13 +41,13 @@ end
 
 #### Actions
 
-* `:install` – Install the Ruby. *(default)*
-* `:uninstall` – Uninstall the Ruby.
+* `:install` – Install the Ruby interpreter. *(default)*
+* `:uninstall` – Uninstall the Ruby interpreter.
 
-#### Attributes
+#### Properties
 
 * `version` – Version of Ruby to install. If a partial version is given, use the
-  latest available version matching that prefix. *(name attribute)*
+  latest available version matching that prefix. *(name properties)*
 
 #### Provider Options
 
@@ -117,18 +117,16 @@ end
 
 * `:run` – Apply the provider options. *(default)*
 
-#### Attributes
+#### Properties
 
-* `resource` – Name of the `ruby_runtime` resource. *(name attribute)*
+* `resource` – Name of the `ruby_runtime` resource. *(name property)*
 * `for_provider` – Provider to set options for.
 
-All other attribute keys will be used as options data.
+All other property keys will be used as options data.
 
 ### `ruby_execute`
 
 The `ruby_execute` resource executes a Ruby script using the configured runtime.
-This is similar to the built-in `execute` resource. Like with `execute` this is
-not idempotent.
 
 ```ruby
 ruby_execute 'myapp.rb' do
@@ -136,18 +134,19 @@ ruby_execute 'myapp.rb' do
 end
 ```
 
+This uses the built-in `execute` resource and supports all the same properties.
+
 #### Actions
 
 * `:run` – Execute the script. *(default)*
 
-#### Attributes
+#### Properties
 
-* `command` – Script and arguments to run. Must not include the `ruby`. *(name attribute)*
-* `directory` – Working directory for the command. Aliased as `cwd` for
-  compatibility with Chef's `execute` resource.
-* `environment` – Hash of environment variables to set for the command.
-* `ruby` – Name of the `ruby_runtime` resource to execute against.
-* `user` – User to run the command as.
+* `command` – Script and arguments to run. Must not include the `ruby`. *(name property)*
+* `ruby` – Name of the `ruby_runtime` resource to use. If not specified, the
+  most recently declared `ruby_runtime` will be used.
+
+For other properties see the [Chef documentation](https://docs.chef.io/resource_execute.html#attributes).
 
 ### `ruby_gem`
 
@@ -183,9 +182,9 @@ will only be triggered if a gem is actually installed.
 * `:install` – Run `bundle install`. *(default)*
 * `:update` – Run `bundle update`.
 
-#### Attributes
+#### Properties
 
-* `path` – Path to a Gemfile or a directory containing a Gemfile. *(name attribute)*
+* `path` – Path to a Gemfile or a directory containing a Gemfile. *(name property)*
 * `binstubs` – Enable binstubs. If set to a string it is the path to generate
   stubs in.
 * `bundler_version` – Version of bundler to install. If unset the latest version is used.
@@ -199,7 +198,7 @@ will only be triggered if a gem is actually installed.
   but that attribute name is already used.
 * `without` – Group or groups to not install.
 
-## Provides
+## Ruby Providers
 
 ### `system`
 
@@ -222,6 +221,7 @@ end
 * `rubygems_package` – Install rubygems from a package. This is only needed for
   Ruby 1.8. *(default: true on RHEL 6)*
 * `package_name` – Override auto-detection of the package name.
+* `package_upgrade` – Install using action `:upgrade`. *(default: false)*
 * `package_version` – Override auto-detection of the package version.
 * `version` – Override the Ruby version.
 
