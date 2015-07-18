@@ -45,7 +45,6 @@ describe PoiseRuby::Resources::BundleInstall do
 
     describe '#action_install' do
       it do
-        expect(provider).to receive(:install_bundler)
         expect(provider).to receive(:run_bundler).with('install')
         provider.action_install
       end
@@ -53,52 +52,10 @@ describe PoiseRuby::Resources::BundleInstall do
 
     describe '#action_update' do
       it do
-        expect(provider).to receive(:install_bundler)
         expect(provider).to receive(:run_bundler).with('update')
         provider.action_update
       end
     end # /describe #action_update
-
-    describe '#install_bundler' do
-      subject { provider.send(:install_bundler) }
-      before do
-        allow(Chef::Resource).to receive(:resource_for_node).and_call_original
-        allow(Chef::Resource).to receive(:resource_for_node).with(:ruby_gem, nil) do
-          Class.new(PoiseRuby::Resources::RubyGem::Resource) do
-            def run_action(*args); end
-          end
-        end
-      end
-
-      context 'with defaults' do
-        let(:new_resource) { double('new_resource', bundler_version: nil, absolute_gem_binary: 'gem', parent_ruby: nil) }
-        # This is an array on 12.3 and earlier, symbol on 12.4+.
-        it { expect(Array(subject.action)).to eq %i{upgrade} }
-        its(:version) { is_expected.to be_nil }
-        its(:parent_ruby) { is_expected.to be_nil }
-      end # /context with defaults
-
-      context 'with a specific version' do
-        let(:new_resource) { double('new_resource', bundler_version: '1.0', absolute_gem_binary: 'gem', parent_ruby: nil) }
-        its(:action) { is_expected.to eq %i{install} }
-        its(:version) { is_expected.to eq '1.0' }
-        its(:parent_ruby) { is_expected.to be_nil }
-      end # /context with a specific version
-
-      context 'with parent_ruby' do
-        let(:parent_ruby) do
-          double('parent_ruby', ruby_environment: {}, gem_binary: '/test/gem').tap do |r|
-            allow(r).to receive(:is_a?).and_return(false)
-            allow(r).to receive(:is_a?).with(PoiseRuby::Resources::RubyRuntime::Resource).and_return(true)
-          end
-        end
-        let(:new_resource) { double('new_resource', bundler_version: nil, absolute_gem_binary: 'gem', parent_ruby: parent_ruby) }
-        # This is an array on 12.3 and earlier, symbol on 12.4+.
-        it { expect(Array(subject.action)).to eq %i{upgrade} }
-        its(:version) { is_expected.to be_nil }
-        its(:parent_ruby) { is_expected.to eq parent_ruby }
-      end # /context with parent_ruby
-    end # /describe #install_bundler
 
     describe '#run_bundler' do
       let(:bundle_output) { '' }

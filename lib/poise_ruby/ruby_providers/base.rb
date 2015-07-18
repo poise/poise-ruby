@@ -25,26 +25,33 @@ module PoiseRuby
     class Base < Chef::Provider
       include Poise(inversion: :ruby_runtime)
 
+      # Set default inversion options.
+      #
+      # @api private
       def self.default_inversion_options(node, new_resource)
         super.merge({
+          bundler_version: new_resource.bundler_version,
           version: new_resource.version,
         })
       end
 
       # The `install` action for the `ruby_runtime` resource.
       #
-      # @abstract
       # @return [void]
       def action_install
-        raise NotImplementedError
+        notifying_block do
+          install_ruby
+          install_bundler
+        end
       end
 
       # The `uninstall` action for the `ruby_runtime` resource.
       #
-      # @abstract
       # @return [void]
       def action_uninstall
-        raise NotImplementedError
+        notifying_block do
+          uninstall_ruby
+        end
       end
 
       # The path to the `ruby` binary.
@@ -73,6 +80,36 @@ module PoiseRuby
         raise NotImplementedError unless base.start_with?('ruby')
         # Allow for names like "ruby2.0" -> "gem2.0".
         ::File.join(dir, base.sub(/^ruby/, 'gem'))
+      end
+
+      private
+
+      # Install the Ruby runtime. Must be implemented by subclass.
+      #
+      # @abstract
+      # @return [void]
+      def install_ruby
+      end
+
+      # Uninstall the Ruby runtime. Must be implemented by subclass.
+      #
+      # @abstract
+      # @return [void]
+      def uninstall_ruby
+      end
+
+      # Install Bundler in to the Ruby runtime.
+      #
+      # @return [void]
+      def install_bundler
+        # Captured because #options conflicts with Chef::Resource::Package#options.
+        bundler_version = options[:bundler_version]
+        return unless bundler_version
+        ruby_gem 'bundler' do
+          action :upgrade if bundler_version == true
+          parent_ruby new_resource
+          version bundler_version if bundler_version.is_a?(String)
+        end
       end
     end
   end

@@ -51,7 +51,7 @@ module PoiseRuby
         # @!attribute parent_ruby
         #   Parent ruby installation.
         #   @return [PoiseRuby::Resources::RubyRuntime::Resource, nil]
-        parent_attribute(:ruby, type: PoiseRuby::Resources::RubyRuntime::Resource, optional: true)
+        parent_attribute(:ruby, type: :ruby_runtime, optional: true)
         # @!attribute path
         #   Path to the Gemfile or to a directory that contains a Gemfile.
         #   @return [String]
@@ -61,10 +61,6 @@ module PoiseRuby
         #   stubs in.
         #   @return [Boolean, String]
         attribute(:binstubs, kind_of: [TrueClass, String])
-        # @!attribute bundler_version
-        #   Version of bundler to install. If unset the latest version is used.
-        #   @return [String]
-        attribute(:bundler_version, kind_of: String)
         # @!attribute deployment
         #   Enable deployment mode.
         #   @return [Boolean]
@@ -129,30 +125,15 @@ module PoiseRuby
 
         # Install bundler and the gems in the Gemfile.
         def action_install
-          install_bundler
           run_bundler('install')
         end
 
         # Install bundler and update the gems in the Gemfile.
         def action_update
-          install_bundler
           run_bundler('update')
         end
 
         private
-
-        # Install bundler using the specified gem binary.
-        def install_bundler
-          # This doesn't use the DSL to keep things simpler and so that a change
-          # in the bundler version doesn't trigger a notification on the resource.
-          klass = Chef::Resource.resource_for_node(:ruby_gem, node)
-          klass.new('bundler', run_context).tap do |r|
-            r.parent_ruby(new_resource.parent_ruby)
-            r.action(:upgrade) unless new_resource.bundler_version
-            r.version(new_resource.bundler_version)
-            r.run_action(*Array(r.action))
-          end
-        end
 
         # Install the gems in the Gemfile.
         def run_bundler(command)

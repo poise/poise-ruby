@@ -39,6 +39,14 @@ module PoiseRuby
         #   Version of Ruby to install.
         #   @return [String]
         attribute(:version, kind_of: String, name_attribute: true)
+        # @!attribute bundler_version
+        #   Version of Bundler to install. It set to `true`, the latest
+        #   available version will be used. If set to `false`, Bundler will
+        #   not be installed.
+        #   @note Disabling the Bundler install may result in other resources
+        #     being non-functional.
+        #   @return [String, Boolean]
+        attribute(:bundler_version, kind_of: [String, TrueClass, FalseClass], default: true)
 
         # The path to the `ruby` binary for this Ruby installation. This is an
         # output property.

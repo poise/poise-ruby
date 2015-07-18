@@ -23,7 +23,7 @@ require 'poise_ruby/ruby_providers/base'
 module PoiseRuby
   module RubyProviders
     class Scl < Base
-      include PoiseLanguages::SclProviderMixin
+      include PoiseLanguages::Scl::Mixin
       provides(:scl)
       scl_package('2.2.2', 'rh-ruby22', {
         ['redhat', 'centos'] => {
@@ -59,6 +59,16 @@ module PoiseRuby
 
       def ruby_environment
         scl_environment
+      end
+
+      private
+
+      def install_ruby
+        install_scl_package
+      end
+
+      def uninstall_ruby
+        uninstall_scl_package
       end
 
     end
