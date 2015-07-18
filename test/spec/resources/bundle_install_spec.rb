@@ -80,7 +80,7 @@ describe PoiseRuby::Resources::BundleInstall do
 
       context 'with a specific version' do
         let(:new_resource) { double('new_resource', bundler_version: '1.0', absolute_gem_binary: 'gem', parent_ruby: nil) }
-        its(:action) { is_expected.to eq :install }
+        its(:action) { is_expected.to eq %i{install} }
         its(:version) { is_expected.to eq '1.0' }
         its(:parent_ruby) { is_expected.to be_nil }
       end # /context with a specific version
