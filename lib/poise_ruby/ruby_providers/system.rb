@@ -70,20 +70,15 @@ module PoiseRuby
         uninstall_system_packages
       end
 
-      # Compute the package name for the development headers.
-      #
-      # @param package_name [String] Package name for the Ruby.
-      # @return [String]
-      def dev_package_name(package_name)
-        name = super
-        if name == 'ruby1.9.3-dev'
+      # Ubuntu has no ruby1.9.3-dev package.
+      def system_dev_package_overrides
+        super.tap do |overrides|
           # WTF Ubuntu, seriously.
-          'ruby1.9.1-dev'
-        else
-          name
+          overrides['ruby1.9.3'] = 'ruby1.9.1-dev' if node.platform_family?('debian')
         end
       end
 
+      # Install the configured rubygems package.
       def install_rubygems_package
         package (options['rubygems_package'].is_a?(String) ? options['rubygems_package'] : 'rubygems')
       end
