@@ -50,7 +50,7 @@ module PoiseRuby
 
         # @!attribute parent_ruby
         #   Parent ruby installation.
-        #   @return [PoiseRuby::Resources::Ruby::Resource, nil]
+        #   @return [PoiseRuby::Resources::RubyRuntime::Resource, nil]
         parent_attribute(:ruby, type: PoiseRuby::Resources::RubyRuntime::Resource, optional: true)
         # @!attribute path
         #   Path to the Gemfile or to a directory that contains a Gemfile.
