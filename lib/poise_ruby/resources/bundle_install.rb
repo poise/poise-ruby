@@ -21,7 +21,7 @@ require 'chef/resource'
 require 'poise'
 
 require 'poise_ruby/error'
-require 'poise_ruby/resources/ruby_runtime'
+require 'poise_ruby/ruby_command_mixin'
 
 
 module PoiseRuby
