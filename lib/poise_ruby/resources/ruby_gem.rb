@@ -14,15 +14,11 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/log'
-require 'chef/mixin/shell_out'
-require 'chef/mixin/which'
-require 'chef/provider'
+require 'chef/provider/package/rubygems'
 require 'chef/resource/gem_package'
 require 'poise'
 
-require 'poise_ruby/resources/ruby_runtime'
+require 'poise_ruby/ruby_command_mixin'
 
 
 module PoiseRuby
@@ -41,8 +37,9 @@ module PoiseRuby
       # @example
       #   ruby_gem 'rack'
       class Resource < Chef::Resource::GemPackage
-        include Poise(parent: true)
+        include Poise
         provides(:ruby_gem)
+        include PoiseRuby::RubyCommandMixin
 
         # @api private
         def initialize(name, run_context=nil)
@@ -51,18 +48,6 @@ module PoiseRuby
           # Remove when all useful versions are using provider resolver.
           @provider = PoiseRuby::Resources::RubyGem::Provider if @provider
         end
-
-        # @!attribute parent_ruby
-        #   Parent ruby installation.
-        #   @return [PoiseRuby::Resources::Ruby::Resource, nil]
-        parent_attribute(:ruby, type: :ruby_runtime, optional: true)
-        # @!attribute gem_binary
-        #   Extend the default #gem_binary to use the parent Ruby by default.
-        #   @return [String]
-        attribute(:gem_binary, kind_of: String, default: lazy { parent_ruby && parent_ruby.gem_binary })
-
-        # Nicer name for the DSL.
-        alias_method :ruby, :parent_ruby
       end
 
       # The default provider for `ruby_gem`.

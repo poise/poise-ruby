@@ -14,12 +14,11 @@
 # limitations under the License.
 #
 
-require 'chef/mixin/which'
 require 'chef/provider/execute'
 require 'chef/resource/execute'
 require 'poise'
 
-require 'poise_ruby/resources/ruby_runtime'
+require 'poise_ruby/ruby_command_mixin'
 
 
 module PoiseRuby
@@ -36,17 +35,10 @@ module PoiseRuby
       #     user 'myuser'
       #   end
       class Resource < Chef::Resource::Execute
-        include Poise(parent: true)
+        include Poise
         provides(:ruby_execute)
         actions(:run)
-
-        # @!attribute parent_ruby
-        #   Parent ruby installation.
-        #   @return [PoiseRuby::Resources::Ruby::Resource, nil]
-        parent_attribute(:ruby, type: :ruby_runtime, optional: true)
-
-        # Nicer name for the DSL.
-        alias_method :ruby, :parent_ruby
+        include PoiseRuby::RubyCommandMixin
       end
 
       # The default provider for `ruby_execute`.
@@ -54,30 +46,18 @@ module PoiseRuby
       # @see Resource
       # @provides ruby_execute
       class Provider < Chef::Provider::Execute
-        include Chef::Mixin::Which
         provides(:ruby_execute)
 
         private
-
-        # The ruby binary to use for this command.
-        #
-        # @return [String]
-        def ruby_binary
-          if new_resource.parent_ruby
-            new_resource.parent_ruby.ruby_binary
-          else
-            which('ruby')
-          end
-        end
 
         # Command to pass to shell_out.
         #
         # @return [String, Array<String>]
         def command
           if new_resource.command.is_a?(Array)
-            [ruby_binary] + new_resource.command
+            [new_resource.ruby] + new_resource.command
           else
-            "#{ruby_binary} #{new_resource.command}"
+            "#{new_resource.ruby} #{new_resource.command}"
           end
         end
 

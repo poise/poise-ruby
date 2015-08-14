@@ -18,6 +18,7 @@
 module PoiseRuby
   autoload :Error, 'poise_ruby/error'
   autoload :Resources, 'poise_ruby/resources'
+  autoload :RubyCommandMixin, 'poise_ruby/ruby_command_mixin'
   autoload :RubyProviders, 'poise_ruby/ruby_providers'
   autoload :VERSION, 'poise_ruby/version'
 end

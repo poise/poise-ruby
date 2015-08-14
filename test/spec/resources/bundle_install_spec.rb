@@ -22,10 +22,10 @@ describe PoiseRuby::Resources::BundleInstall do
       bundle_install '/test/Gemfile'
     end
     before do
-      allow_any_instance_of(described_class).to receive(:which).with('gem').and_return('/test/bin/gem')
+      allow_any_instance_of(described_class).to receive(:which).with('ruby').and_return('/test/bin/ruby')
     end
 
-    it { is_expected.to install_bundle_install('/test/Gemfile').with(gem_binary: '/test/bin/gem', absolute_gem_binary: '/test/bin/gem') }
+    it { is_expected.to install_bundle_install('/test/Gemfile').with(gem_binary: '/test/bin/gem') }
 
     # Just testing this for coverage of the update_bundle_install matcher
     context 'with action :update' do
@@ -40,7 +40,7 @@ describe PoiseRuby::Resources::BundleInstall do
   end # /describe PoiseRuby::Resources::BundleInstall::Resource
 
   describe PoiseRuby::Resources::BundleInstall::Provider do
-    let(:new_resource) { double('new_resource', parent_ruby: nil) }
+    let(:new_resource) { double('new_resource', parent_ruby: nil, timeout: 900, ruby: '/usr/bin/ruby') }
     let(:provider) { described_class.new(new_resource, nil) }
 
     describe '#action_install' do
@@ -63,7 +63,7 @@ describe PoiseRuby::Resources::BundleInstall do
       before do
         allow(provider).to receive(:bundler_command).and_return(%w{bundle install})
         allow(provider).to receive(:gemfile_path).and_return('Gemfile')
-        expect(provider).to receive(:shell_out!).with(%w{bundle install}, environment: {'BUNDLE_GEMFILE' => 'Gemfile'}).and_return(double(stdout: bundle_output))
+        expect(provider).to receive(:ruby_shell_out!).with(%w{bundle install}, environment: {'BUNDLE_GEMFILE' => 'Gemfile'}).and_return(double(stdout: bundle_output))
       end
 
       context 'with a new gem' do
@@ -114,11 +114,11 @@ EOH
     end # /describe #run_bundler
 
     describe '#gem_bin' do
-      let(:new_resource) { double('new_resource', absolute_gem_binary: '/usr/local/bin/gem', parent_ruby: nil) }
+      let(:new_resource) { double('new_resource', gem_binary: '/usr/local/bin/gem', parent_ruby: nil, timeout: 900, ruby: '/usr/bin/ruby') }
       let(:gem_environment) { '' }
       subject { provider.send(:gem_bindir) }
       before do
-        expect(provider).to receive(:shell_out!).with(['/usr/local/bin/gem', 'environment'], environment: {}).and_return(double(stdout: gem_environment))
+        expect(provider).to receive(:ruby_shell_out!).with('/usr/local/bin/gem', 'environment').and_return(double(stdout: gem_environment))
       end
 
       context 'with an Ubuntu 14.04 gem environment' do

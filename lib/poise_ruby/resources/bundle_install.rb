@@ -43,15 +43,11 @@ module PoiseRuby
       #     gem_path '/usr/local/bin/gem'
       #   end
       class Resource < Chef::Resource
-        include Poise(parent: true)
-        include Chef::Mixin::Which
+        include Poise
         provides(:bundle_install)
         actions(:install, :update)
+        include PoiseRuby::RubyCommandMixin
 
-        # @!attribute parent_ruby
-        #   Parent ruby installation.
-        #   @return [PoiseRuby::Resources::RubyRuntime::Resource, nil]
-        parent_attribute(:ruby, type: :ruby_runtime, optional: true)
         # @!attribute path
         #   Path to the Gemfile or to a directory that contains a Gemfile.
         #   @return [String]
@@ -65,10 +61,6 @@ module PoiseRuby
         #   Enable deployment mode.
         #   @return [Boolean]
         attribute(:deployment, equal_to: [true, false], default: false)
-        # @!attribute gem_binary
-        #   Path to the gem binary. If unset this uses the `ruby_runtime` parent.
-        #   @return [String]
-        attribute(:gem_binary, kind_of: String, default: lazy { default_gem_binary })
         # @!attribute jobs
         #   Number of parallel installations to run.
         #   @return [String, Integer]
@@ -90,29 +82,6 @@ module PoiseRuby
         #   Group or groups to not install.
         #   @return [String, Array<String>]
         attribute(:without, kind_of: [Array, String])
-
-        # Nicer name for the DSL.
-        alias_method :ruby, :parent_ruby
-
-        # Absolute path to the gem binary.
-        #
-        # @return [String]
-        def absolute_gem_binary
-          ::File.expand_path(gem_binary, path)
-        end
-
-        private
-
-        # Default gem binary path.
-        #
-        # @return [String]
-        def default_gem_binary
-          if parent_ruby
-            parent_ruby.gem_binary
-          else
-            which('gem')
-          end
-        end
       end
 
       # The default provider for the `bundle_install` resource.
@@ -120,8 +89,8 @@ module PoiseRuby
       # @see Resource
       class Provider < Chef::Provider
         include Poise
-        include Chef::Mixin::ShellOut
         provides(:bundle_install)
+        include PoiseRuby::RubyCommandMixin
 
         # Install bundler and the gems in the Gemfile.
         def action_install
@@ -138,7 +107,7 @@ module PoiseRuby
         # Install the gems in the Gemfile.
         def run_bundler(command)
           return converge_by "Run bundle #{command}" if whyrun_mode?
-          cmd = shell_out!(bundler_command(command), environment: ruby_environment.merge('BUNDLE_GEMFILE' => gemfile_path))
+          cmd = ruby_shell_out!(bundler_command(command), environment: {'BUNDLE_GEMFILE' => gemfile_path})
           # Look for a line like 'Installing $gemname $version' to know if we did anything.
           if cmd.stdout.include?('Installing')
             new_resource.updated_by_last_action(true)
@@ -151,7 +120,7 @@ module PoiseRuby
         #
         # @return [String]
         def gem_bindir
-          cmd = shell_out!([new_resource.absolute_gem_binary, 'environment'], environment: ruby_environment)
+          cmd = ruby_shell_out!(new_resource.gem_binary, 'environment')
           # Parse a line like:
           # - EXECUTABLE DIRECTORY: /usr/local/bin
           matches = cmd.stdout.scan(/EXECUTABLE DIRECTORY: (.*)$/).first
@@ -221,17 +190,6 @@ module PoiseRuby
                 path = next_path
               end
             end
-          end
-        end
-
-        # Find the environment variables for the Ruby installation.
-        #
-        # @return [Hash<String, String>]
-        def ruby_environment
-          @ruby_environment ||= if new_resource.parent_ruby
-            new_resource.parent_ruby.ruby_environment
-          else
-            {}
           end
         end
 
