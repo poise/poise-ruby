@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+require 'shellwords'
+
+require 'chef/mash'
 require 'chef/provider/execute'
 require 'chef/resource/execute'
 require 'poise'
@@ -39,6 +42,11 @@ module PoiseRuby
         provides(:ruby_execute)
         actions(:run)
         include PoiseRuby::RubyCommandMixin
+
+        # @!attribute parent_bundle
+        #   Optional bundle_install resource to run `bundle exec` against.
+        #   @return [PoiseRuby::Resources::BundleInstall::Resource]
+        parent_attribute(:bundle, type: :bundle_install, optional: true, auto: false)
       end
 
       # The default provider for `ruby_execute`.
@@ -54,10 +62,15 @@ module PoiseRuby
         #
         # @return [String, Array<String>]
         def command
+          prefix = [new_resource.ruby]
+          if new_resource.parent_bundle
+            prefix << new_resource.parent_bundle.bundler_binary
+            prefix << 'exec'
+          end
           if new_resource.command.is_a?(Array)
-            [new_resource.ruby] + new_resource.command
+            prefix + new_resource.command
           else
-            "#{new_resource.ruby} #{new_resource.command}"
+            "#{Shellwords.join(prefix)} #{new_resource.command}"
           end
         end
 
@@ -65,14 +78,10 @@ module PoiseRuby
         #
         # @return [Hash]
         def environment
-          if new_resource.parent_ruby
-            environment = new_resource.parent_ruby.ruby_environment
-            if new_resource.environment
-              environment = environment.merge(new_resource.environment)
-            end
-            environment
-          else
-            new_resource.environment
+          Mash.new.tap do |environment|
+            environment.update(new_resource.parent_ruby.ruby_environment) if new_resource.parent_ruby
+            environment['BUNDLE_GEMFILE'] = new_resource.parent_bundle.gemfile_path if new_resource.parent_bundle
+            environment.update(new_resource.environment) if new_resource.environment
           end
         end
 
