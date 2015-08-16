@@ -55,7 +55,7 @@ module PoiseRuby
         # @example
         #   execute "#{resources('ruby_runtime[2.2.2]').ruby_binary} myapp.rb"
         def ruby_binary
-          provider_for_action(:ruby_binary).ruby_binary
+          @ruby_binary ||= provider_for_action(:ruby_binary).ruby_binary
         end
 
         # The environment variables for this Ruby installation. This is an
@@ -67,7 +67,7 @@ module PoiseRuby
         #     environment resources('ruby_runtime[2.2.2]').ruby_environment
         #   end
         def ruby_environment
-          provider_for_action(:ruby_environment).ruby_environment
+          @ruby_environment ||= provider_for_action(:ruby_environment).ruby_environment
         end
 
         # The path to the `gem` binary for this Ruby installation. This is an
@@ -77,7 +77,7 @@ module PoiseRuby
         # @example
         #   execute "#{resources('ruby_runtime[2.2.2]').gem_binary} install myapp"
         def gem_binary
-          provider_for_action(:gem_binary).gem_binary
+          @gem_binary ||= provider_for_action(:gem_binary).gem_binary
         end
       end
 
