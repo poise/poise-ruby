@@ -82,6 +82,28 @@ module PoiseRuby
         #   Group or groups to not install.
         #   @return [String, Array<String>]
         attribute(:without, kind_of: [Array, String])
+
+        # The path to the `bundle` binary for this installation. This is an
+        # output property.
+        #
+        # @return [String]
+        # @example
+        #   execute "#{resources('bundle_install[/opt/myapp]').bundler_binary} vendor"
+        def bundler_binary
+          @bundler_binary ||= provider_for_action(:bundler_binary).bundler_binary
+        end
+
+        # The path to the Gemfile for this installation. This is an output
+        # property.
+        #
+        # @return [String]
+        # @example
+        #   file resources('bundle_install[/opt/myapp]').gemfile_path do
+        #     owner 'root'
+        #   end
+        def gemfile_path
+          @gemfile_path ||= provider_for_action(:gemfile_path).gemfile_path
+        end
       end
 
       # The default provider for the `bundle_install` resource.
@@ -100,6 +122,34 @@ module PoiseRuby
         # Install bundler and update the gems in the Gemfile.
         def action_update
           run_bundler('update')
+        end
+
+        # Return the absolute path to the correct bundle binary to run.
+        #
+        # @return [String]
+        def bundler_binary
+          @bundler_binary ||= ::File.join(gem_bindir, 'bundle')
+        end
+
+        # Find the absolute path to the Gemfile. This mirrors bundler's internal
+        # search logic by scanning up to parent folder as needed.
+        #
+        # @return [String]
+        def gemfile_path
+          @gemfile_path ||= begin
+            path = ::File.expand_path(new_resource.path)
+            if ::File.file?(path)
+              # We got a path to a real file, use that.
+              path
+            else
+              # Walk back until path==dirname(path) meaning we are at the root
+              while path != (next_path = ::File.dirname(path))
+                possible_path = ::File.join(path, 'Gemfile')
+                return possible_path if ::File.file?(possible_path)
+                path = next_path
+              end
+            end
+          end
         end
 
         private
@@ -129,13 +179,6 @@ module PoiseRuby
           else
             raise PoiseRuby::Error.new("Cannot find EXECUTABLE DIRECTORY: #{cmd.stdout}")
           end
-        end
-
-        # Return the absolute path to the correct bundle binary to run.
-        #
-        # @return [String]
-        def bundler_binary
-          @bundler_binary ||= ::File.join(gem_bindir, 'bundle')
         end
 
         # Command line options for the bundle install.
@@ -170,27 +213,6 @@ module PoiseRuby
         # @return [Array<String>]
         def bundler_command(command)
           [bundler_binary, command] + bundler_options
-        end
-
-        # Find the absolute path to the Gemfile. This mirrors bundler's internal
-        # search logic by scanning up to parent folder as needed.
-        #
-        # @return [String]
-        def gemfile_path
-          @gemfile_path ||= begin
-            path = ::File.expand_path(new_resource.path)
-            if ::File.file?(path)
-              # We got a path to a real file, use that.
-              path
-            else
-              # Walk back until path==dirname(path) meaning we are at the root
-              while path != (next_path = ::File.dirname(path))
-                possible_path = ::File.join(path, 'Gemfile')
-                return possible_path if ::File.file?(possible_path)
-                path = next_path
-              end
-            end
-          end
         end
 
       end
