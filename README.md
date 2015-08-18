@@ -35,8 +35,8 @@ Chef 12 or newer is required.
 
 Attributes are used to configure the default recipe.
 
-* `node['poise-python']['install_ruby']` – Install a Ruby runtime. *(default: true)*
-* `node['poise-python']['install_chef_ruby']` – Create a `ruby_runtime` using
+* `node['poise-ruby']['install_ruby']` – Install a Ruby runtime. *(default: true)*
+* `node['poise-ruby']['install_chef_ruby']` – Create a `ruby_runtime` using
   the `:chef` provider. Doesn't actually install anything. *(default: true)*
 
 ## Recipes
