@@ -14,10 +14,6 @@
 # limitations under the License.
 #
 
-# Default inversion options.
-default['poise-ruby']['provider'] = 'auto'
-default['poise-ruby']['options'] = {}
-
-# Used for the default recipe.
-default['poise-ruby']['install_ruby'] = true
-default['poise-ruby']['install_chef_ruby'] = true
+# Default runtimes, last one will be the default.
+ruby_runtime('chef') { provider :chef } if node['poise-ruby']['install_chef_ruby']
+ruby_runtime 'ruby' if node['poise-ruby']['install_ruby']

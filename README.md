@@ -27,6 +27,26 @@ bundle_install '/path/to/Gemfile' do
 end
 ```
 
+## Requirements
+
+Chef 12 or newer is required.
+
+## Attributes
+
+Attributes are used to configure the default recipe.
+
+* `node['poise-python']['install_ruby']` – Install a Ruby runtime. *(default: true)*
+* `node['poise-python']['install_chef_ruby']` – Create a `ruby_runtime` using
+  the `:chef` provider. Doesn't actually install anything. *(default: true)*
+
+## Recipes
+
+### `default`
+
+The default recipe installs Ruby based on the node attributes. It is entirely
+optional and can be ignored in favor of direct use of the `ruby_runtime`
+resource.
+
 ## Resources
 
 ### `ruby_runtime`
