@@ -40,7 +40,7 @@ describe PoiseRuby::Resources::BundleInstall do
   end # /describe PoiseRuby::Resources::BundleInstall::Resource
 
   describe PoiseRuby::Resources::BundleInstall::Provider do
-    let(:new_resource) { double('new_resource', parent_ruby: nil, timeout: 900, ruby: '/usr/bin/ruby') }
+    let(:new_resource) { double('new_resource', parent_ruby: nil, timeout: 900, ruby: '/usr/bin/ruby', user: nil) }
     let(:provider) { described_class.new(new_resource, nil) }
 
     describe '#action_install' do
@@ -63,7 +63,7 @@ describe PoiseRuby::Resources::BundleInstall do
       before do
         allow(provider).to receive(:bundler_command).and_return(%w{bundle install})
         allow(provider).to receive(:gemfile_path).and_return('Gemfile')
-        expect(provider).to receive(:ruby_shell_out!).with(%w{bundle install}, environment: {'BUNDLE_GEMFILE' => 'Gemfile'}).and_return(double(stdout: bundle_output))
+        expect(provider).to receive(:ruby_shell_out!).with(%w{bundle install}, environment: {'BUNDLE_GEMFILE' => 'Gemfile'}, user: nil).and_return(double(stdout: bundle_output))
       end
 
       context 'with a new gem' do
