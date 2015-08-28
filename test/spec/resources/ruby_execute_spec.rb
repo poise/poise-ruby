@@ -23,7 +23,7 @@ describe PoiseRuby::Resources::RubyExecute do
     end
 
     it { is_expected.to run_ruby_execute('myapp.rb') }
-  end
+  end # /describe PoiseRuby::Resources::RubyExecute::Resource
 
   describe PoiseRuby::Resources::RubyExecute::Provider do
     let(:command) { nil }
@@ -74,5 +74,5 @@ describe PoiseRuby::Resources::RubyExecute do
       its(:command) { is_expected.to eq '/ruby myapp.rb' }
       its(:environment) { is_expected.to eq({'PATH' => '/bin'}) }
     end # /context with a ruby parent
-  end
+  end # /describe PoiseRuby::Resources::RubyExecute::Provider
 end
