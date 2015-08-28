@@ -16,4 +16,4 @@
 
 # Default runtimes, last one will be the default.
 ruby_runtime('chef') { provider :chef } if node['poise-ruby']['install_chef_ruby']
-ruby_runtime 'ruby' if node['poise-ruby']['install_ruby']
+ruby_runtime('ruby') { version '' } if node['poise-ruby']['install_ruby']
