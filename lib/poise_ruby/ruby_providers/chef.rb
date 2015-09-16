@@ -20,7 +20,7 @@ require 'poise_ruby/ruby_providers/base'
 
 module PoiseRuby
   module RubyProviders
-    # Inversion provider for the `ruby` resource to use whatever Ruby is
+    # Inversion provider for the `ruby_runtime` resource to use whatever Ruby is
     # currently running, generally Chef's omnibus-d Ruby.
     #
     # @since 2.0.0
