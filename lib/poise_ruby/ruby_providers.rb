@@ -15,6 +15,7 @@
 #
 
 require 'poise_ruby/ruby_providers/chef'
+require 'poise_ruby/ruby_providers/dummy'
 require 'poise_ruby/ruby_providers/scl'
 require 'poise_ruby/ruby_providers/system'
 
