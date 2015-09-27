@@ -22,7 +22,7 @@ describe PoiseRuby::Resources::BundleInstall do
       bundle_install '/test/Gemfile'
     end
     before do
-      allow_any_instance_of(described_class).to receive(:which).with('ruby').and_return('/test/bin/ruby')
+      allow(PoiseLanguages::Utils).to receive(:which).with('ruby').and_return('/test/bin/ruby')
     end
 
     it { is_expected.to install_bundle_install('/test/Gemfile').with(gem_binary: '/test/bin/gem') }
