@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+require 'chef/platform/provider_priority_map'
+
 require 'poise_ruby/ruby_providers/chef'
 require 'poise_ruby/ruby_providers/dummy'
 require 'poise_ruby/ruby_providers/scl'
