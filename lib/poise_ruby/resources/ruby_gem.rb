@@ -96,6 +96,12 @@ module PoiseRuby
           end
 
           begin
+            if ENV['GEM_HOME'] && !ENV['GEM_HOME'].empty?
+              Chef::Log.warn("[#{new_resource}] $GEM_HOME is set in Chef's environment, this will likely interfere with gem installation")
+            end
+            if ENV['GEM_PATH'] && !ENV['GEM_PATH'].empty?
+              Chef::Log.warn("[#{new_resource}] $GEM_PATH is set in Chef's environment, this will likely interfere with gem installation")
+            end
             old_vars = environment_to_add.inject({}) do |memo, (key, value)|
               memo[key] = ENV[key]
               ENV[key] = value
