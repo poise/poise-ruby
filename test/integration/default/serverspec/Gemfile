@@ -14,16 +14,6 @@
 # limitations under the License.
 #
 
-require 'poise_ruby/spec_helper'
+source 'https://rubygems.org/'
 
-describe 'chef provider' do
-  it_should_behave_like 'a ruby_runtime_test', 'chef'
-end
-
-describe 'system provider', unless: File.exist?('/no_system') do
-  it_should_behave_like 'a ruby_runtime_test', 'system'
-end
-
-describe 'scl provider', unless: File.exist?('/no_scl') do
-  it_should_behave_like 'a ruby_runtime_test', 'scl'
-end
+gem 'poise-ruby-spechelper', github: 'poise/poise-ruby-spechelper'
