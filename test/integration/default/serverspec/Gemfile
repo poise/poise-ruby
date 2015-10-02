@@ -16,4 +16,4 @@
 
 source 'https://rubygems.org/'
 
-gem 'poise-ruby-spechelper', github: 'poise/poise-ruby-spechelper'
+gem 'poise-ruby-spechelper'
