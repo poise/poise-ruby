@@ -53,9 +53,15 @@ module PoiseRuby
         # Find the version number folder inside that.
         candidates = Dir.entries(vendor_base_path)
         ruby_abi_folder = candidates.find {|name| name =~ /^\d\./ }
-        raise PoiseError::Error.new("Unable to find the vendor bin folder for #{vendor_base_path}: #{candidates.join(', ')}") unless ruby_abi_folder
+        vendor_sub_path = if ruby_abi_folder
+          ::File.join(ruby_abi_folder, 'bin')
+        elsif candidates.include?('bin')
+          'bin'
+        else
+          raise PoiseRuby::Error.new("Unable to find the vendor bin folder for #{vendor_base_path}: #{candidates.join(', ')}")
+        end
         # Make the final path.
-        ::File.join(vendor_base_path, ruby_abi_folder, 'bin')
+        ::File.join(vendor_base_path, vendor_sub_path)
       else
         # The folder the bundler binary is in was the global gem executable dir.
         ::File.dirname(bundler_binary)
