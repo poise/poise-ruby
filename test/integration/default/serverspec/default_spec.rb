@@ -42,11 +42,11 @@ RSpec.shared_examples 'a ruby_runtime_test' do |ruby_name, version=nil|
   end
 
   describe 'ruby_gem' do
-    assert_file('require_sass_before', false)
-    assert_file('require_sass_mid')
-    assert_file('require_sass_after', false)
-    assert_file('sentinel_sass')
-    assert_file('sentinel_sass2', false)
+    assert_file('require_thor_before', false)
+    assert_file('require_thor_mid')
+    assert_file('require_thor_after', false)
+    assert_file('sentinel_thor')
+    assert_file('sentinel_thor2', false)
 
     assert_file('sentinel_bundler', false)
   end
@@ -58,7 +58,7 @@ RSpec.shared_examples 'a ruby_runtime_test' do |ruby_name, version=nil|
     assert_file('require_tomlrb') do
       its(:content) { is_expected.to eq '1.1.0' }
     end
-    assert_file('sentinel_sass_bundle', false)
+    assert_file('sentinel_thor_bundle', false)
   end
 
   describe 'bundler + ruby_execute' do

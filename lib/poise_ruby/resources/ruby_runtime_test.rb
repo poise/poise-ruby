@@ -69,28 +69,28 @@ module PoiseRuby
             test_version
 
             # Test ruby_gem.
-            ruby_gem 'sass remove before' do
+            ruby_gem 'thor remove before' do
               action :remove
-              package_name 'sass'
+              package_name 'thor'
               ruby new_resource.name
             end
-            test_require('sass', 'sass_before')
-            ruby_gem 'sass' do
+            test_require('thor', 'thor_before')
+            ruby_gem 'thor' do
               ruby new_resource.name
-              notifies :create, sentinel_file('sass'), :immediately
+              notifies :create, sentinel_file('thor'), :immediately
             end
-            test_require('sass', 'sass_mid')
-            ruby_gem 'sass again' do
-              package_name 'sass'
+            test_require('thor', 'thor_mid')
+            ruby_gem 'thor again' do
+              package_name 'thor'
               ruby new_resource.name
-              notifies :create, sentinel_file('sass2'), :immediately
+              notifies :create, sentinel_file('thor2'), :immediately
             end
-            ruby_gem 'sass remove after' do
+            ruby_gem 'thor remove after' do
               action :remove
-              package_name 'sass'
+              package_name 'thor'
               ruby new_resource.name
             end
-            test_require('sass', 'sass_after')
+            test_require('thor', 'thor_after')
 
             # Use bundler to test something that should always be installed.
             ruby_gem 'bundler' do
@@ -113,7 +113,7 @@ EOH
             end
             test_require('hashie', bundle: bundle1)
             test_require('tomlrb', bundle: bundle1)
-            test_require('sass', 'sass_bundle', bundle: bundle1)
+            test_require('thor', 'thor_bundle', bundle: bundle1)
 
             # Test for bundle exec shebang issues.
             bundle2_path = ::File.join(new_resource.path, 'bundle2')
@@ -174,7 +174,7 @@ EOH
             group 'root'
             mode '644'
             content <<-EOH
-IO.write(ARGV[0], RUBY_VERSION)
+File.new(ARGV[0], 'w').write(RUBY_VERSION)
 EOH
           end
 
@@ -190,10 +190,11 @@ EOH
             group 'root'
             mode '644'
             content <<-EOH
+require 'rubygems'
 begin
   require "\#{ARGV[0]}/version"
   klass = ARGV[1].split('::').inject(Object) {|memo, name| memo.const_get(name) }
-  IO.write(ARGV[2], klass::VERSION)
+  File.new(ARGV[2], 'w').write(klass::VERSION)
 rescue LoadError
 end
 EOH
