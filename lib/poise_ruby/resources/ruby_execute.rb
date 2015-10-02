@@ -14,13 +14,12 @@
 # limitations under the License.
 #
 
-require 'shellwords'
-
 require 'chef/mash'
 require 'chef/provider/execute'
 require 'chef/resource/execute'
 require 'poise'
 
+require 'poise_ruby/bundler_mixin'
 require 'poise_ruby/ruby_command_mixin'
 
 
@@ -54,6 +53,7 @@ module PoiseRuby
       # @see Resource
       # @provides ruby_execute
       class Provider < Chef::Provider::Execute
+        include PoiseRuby::BundlerMixin
         provides(:ruby_execute)
 
         private
@@ -62,15 +62,14 @@ module PoiseRuby
         #
         # @return [String, Array<String>]
         def command
-          prefix = [new_resource.ruby]
           if new_resource.parent_bundle
-            prefix << new_resource.parent_bundle.bundler_binary
-            prefix << 'exec'
-          end
-          if new_resource.command.is_a?(Array)
-            prefix + new_resource.command
+            bundle_exec_command(new_resource.command, path: environment['PATH'])
           else
-            "#{Shellwords.join(prefix)} #{new_resource.command}"
+            if new_resource.command.is_a?(Array)
+              [new_resource.ruby] + new_resource.command
+            else
+              "#{new_resource.ruby} #{new_resource.command}"
+            end
           end
         end
 

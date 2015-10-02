@@ -17,30 +17,65 @@
 require 'serverspec'
 set :backend, :exec
 
-describe 'ruby_runtime' do
-  describe file('/root/one') do
-    it { is_expected.to be_a_file }
-  end
-
-  describe file('/root/two') do
-    it { is_expected.to be_a_file }
-    its(:content) { are_expected.to start_with '2.1' }
-  end
-
-  describe file('/root/three') do
-    it { is_expected.to be_a_file }
-    its(:content) { are_expected.to eq '1.5' }
-  end
-
-  describe 'scl provider', if: File.exist?('/root/scl') do
-    describe file('/root/four') do
-      it { is_expected.to be_a_file }
-      its(:content) { are_expected.to eq '2.2.2' }
-    end
-
-    describe file('/root/five') do
-      it { is_expected.to be_a_file }
-      its(:content) { are_expected.to eq '1.5' }
+# Set up the shared example for ruby_runtime_test.
+RSpec.shared_examples 'a ruby_runtime_test' do |ruby_name, version=nil|
+  let(:ruby_name) { ruby_name }
+  let(:ruby_path) { File.join('', 'root', "ruby_test_#{ruby_name}") }
+  # Helper for all the file checks.
+  def self.assert_file(rel_path, should_exist=true, &block)
+    describe rel_path do
+      subject { file(File.join(ruby_path, rel_path)) }
+      # Do nothing for nil.
+      if should_exist == true
+        it { is_expected.to be_a_file }
+      elsif should_exist == false
+        it { is_expected.to_not exist }
+      end
+      instance_eval(&block) if block
     end
   end
+
+  describe 'ruby_runtime' do
+    assert_file('version') do
+      its(:content) { is_expected.to start_with version } if version
+    end
+  end
+
+  describe 'ruby_gem' do
+    assert_file('require_sass_before', false)
+    assert_file('require_sass_mid')
+    assert_file('require_sass_after', false)
+    assert_file('sentinel_sass')
+    assert_file('sentinel_sass2', false)
+
+    assert_file('sentinel_bundler', false)
+  end
+
+  describe 'bundle_install' do
+    assert_file('require_hashie') do
+      its(:content) { is_expected.to_not eq '' }
+    end
+    assert_file('require_tomlrb') do
+      its(:content) { is_expected.to eq '1.1.0' }
+    end
+    assert_file('sentinel_sass_bundle', false)
+  end
+
+  describe 'bundler + ruby_execute' do
+    assert_file('unicorn_version') do
+      its(:content) { is_expected.to eq "unicorn v4.9.0\n" }
+    end
+  end
+end # /shared_examples a ruby_runtime_test
+
+describe 'chef provider' do
+  it_should_behave_like 'a ruby_runtime_test', 'chef'
+end
+
+describe 'system provider', unless: File.exist?('/no_system') do
+  it_should_behave_like 'a ruby_runtime_test', 'system'
+end
+
+describe 'scl provider', unless: File.exist?('/no_scl') do
+  it_should_behave_like 'a ruby_runtime_test', 'scl'
 end

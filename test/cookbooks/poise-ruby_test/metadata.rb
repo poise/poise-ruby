@@ -16,3 +16,4 @@
 
 name 'poise-ruby_test'
 depends 'poise-ruby'
+depends 'build-essential'

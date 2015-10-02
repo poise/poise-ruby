@@ -16,6 +16,7 @@
 
 
 module PoiseRuby
+  autoload :BundlerMixin, 'poise_ruby/bundler_mixin'
   autoload :Error, 'poise_ruby/error'
   autoload :Resources, 'poise_ruby/resources'
   autoload :RubyCommandMixin, 'poise_ruby/ruby_command_mixin'

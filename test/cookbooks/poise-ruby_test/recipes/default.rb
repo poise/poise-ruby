@@ -14,72 +14,27 @@
 # limitations under the License.
 #
 
+require 'poise_ruby/resources/ruby_runtime_test'
+
+include_recipe 'build-essential'
+
 # Install lsb-release because Debian 6 doesn't by default and serverspec requires it
 package 'lsb-release' if platform?('debian') && node['platform_version'].start_with?('6')
 
-ruby_runtime 'chef' do
-  provider :chef
+ruby_runtime_test 'chef' do
+  runtime_provider :chef
 end
 
-ruby_runtime 'any' do
+ruby_runtime_test 'system' do
   version ''
-  provider :system
+  runtime_provider :system
 end
-
-file '/root/poise_ruby_test.rb' do
-  user 'root'
-  group 'root'
-  mode '644'
-  content <<-EOH
-File.open(ARGV[0], 'w') do |f|
-  f.write(RUBY_VERSION)
-end
-EOH
-end
-
-ruby_execute '/root/poise_ruby_test.rb /root/one'
-
-ruby_execute '/root/poise_ruby_test.rb /root/two' do
-  ruby 'chef'
-end
-
-ruby_gem 'rack' do
-  version '1.6.0'
-end
-
-file '/root/poise_ruby_test2.rb' do
-  user 'root'
-  group 'root'
-  mode '644'
-  content <<-EOH
-require 'rubygems'
-require 'rack'
-File.open(ARGV[0], 'w') do |f|
-  f.write(Rack.release)
-end
-EOH
-end
-
-ruby_execute '/root/poise_ruby_test2.rb /root/three'
 
 if platform_family?('rhel')
-  file '/root/scl'
-
-  ruby_runtime 'scl' do
-    version '2'
-    provider :scl
+  ruby_runtime_test 'scl' do
+    version ''
+    runtime_provider :scl
   end
-
-  ruby_execute '/root/poise_ruby_test.rb /root/four' do
-    ruby 'scl'
-  end
-
-  ruby_gem 'rack' do
-    version '1.6.0'
-    ruby 'scl'
-  end
-
-  ruby_execute '/root/poise_ruby_test2.rb /root/five' do
-    ruby 'scl'
-  end
+else
+  file '/no_scl'
 end

@@ -21,7 +21,7 @@ require 'poise_languages'
 module PoiseRuby
   # Mixin for resources and providers which run Ruby commands.
   #
-  # @since 1.0.0
+  # @since 2.0.0
   module RubyCommandMixin
     include Poise::Utils::ResourceProviderMixin
 
