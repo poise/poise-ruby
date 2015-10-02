@@ -56,15 +56,15 @@ describe PoiseRuby::Resources::RubyExecute do
 
     context 'with a bundle parent' do
       let(:command) { 'myapp.rb' }
-      let(:parent_bundle) { double('parent_bundle', bundler_binary: '/bundle', gemfile_path: '/srv/Gemfile') }
-      its(:command) { is_expected.to eq '/ruby /bundle exec myapp.rb' }
+      let(:parent_bundle) { double('parent_bundle', bundler_binary: '/bundle', gemfile_path: '/srv/Gemfile', binstubs: false, vendor: false, deployment: false) }
+      its(:command) { is_expected.to eq '/ruby /bundle exec /ruby myapp.rb' }
       its(:environment) { is_expected.to eq({'BUNDLE_GEMFILE' => '/srv/Gemfile'}) }
     end # /context with a bundle parent
 
     context 'with a bundle parent and an array command' do
       let(:command) { %w{myapp.rb} }
-      let(:parent_bundle) { double('parent_bundle', bundler_binary: '/bundle', gemfile_path: '/srv/Gemfile') }
-      its(:command) { is_expected.to eq %w{/ruby /bundle exec myapp.rb} }
+      let(:parent_bundle) { double('parent_bundle', bundler_binary: '/bundle', gemfile_path: '/srv/Gemfile', binstubs: false, vendor: false, deployment: false) }
+      its(:command) { is_expected.to eq %w{/ruby /bundle exec /ruby myapp.rb} }
       its(:environment) { is_expected.to eq({'BUNDLE_GEMFILE' => '/srv/Gemfile'}) }
     end # /context with a bundle parent and an array command
 
