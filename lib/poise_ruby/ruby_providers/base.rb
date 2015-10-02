@@ -17,6 +17,7 @@
 require 'chef/provider'
 require 'poise'
 
+require 'poise_ruby/resources/ruby_gem'
 require 'poise_ruby/resources/ruby_runtime'
 
 
