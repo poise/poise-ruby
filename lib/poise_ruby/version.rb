@@ -16,5 +16,5 @@
 
 
 module PoiseRuby
-  VERSION = '2.1.1.pre'
+  VERSION = '2.1.1'
 end
