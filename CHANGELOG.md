@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.1
+
+* Create ChefSpec matchers for the `ruby_gem` resource.
+
 ## v2.1.0
 
 * Fix version field for default Ruby runtime.
