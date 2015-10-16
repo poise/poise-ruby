@@ -39,6 +39,7 @@ module PoiseRuby
       class Resource < Chef::Resource::GemPackage
         include Poise
         provides(:ruby_gem)
+        actions(:install, :upgrade, :remove, :purge, :reconfig)
         include PoiseRuby::RubyCommandMixin
 
         # @api private
