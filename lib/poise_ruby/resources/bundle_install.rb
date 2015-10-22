@@ -82,6 +82,10 @@ module PoiseRuby
         #   Group or groups to not install.
         #   @return [String, Array<String>]
         attribute(:without, kind_of: [Array, String])
+        # @!attribute git_ssh
+        #   Value for GIT_SSH environment variable
+        #   @return [String]
+        attribute(:git_ssh, kind_of: [String])
 
         # The path to the `bundle` binary for this installation. This is an
         # output property.
@@ -157,7 +161,9 @@ module PoiseRuby
         # Install the gems in the Gemfile.
         def run_bundler(command)
           return converge_by "Run bundle #{command}" if whyrun_mode?
-          cmd = ruby_shell_out!(bundler_command(command), environment: {'BUNDLE_GEMFILE' => gemfile_path}, user: new_resource.user)
+          environment = { 'BUNDLE_GEMFILE' => gemfile_path }
+          environment['GIT_SSH'] = new_resource.git_ssh if new_resource.git_ssh
+          cmd = ruby_shell_out!(bundler_command(command), environment: environment, user: new_resource.user)
           # Look for a line like 'Installing $gemname $version' to know if we did anything.
           if cmd.stdout.include?('Installing')
             new_resource.updated_by_last_action(true)
