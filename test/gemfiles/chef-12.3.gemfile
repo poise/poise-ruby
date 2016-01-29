@@ -14,27 +14,6 @@
 # limitations under the License.
 #
 
-require 'poise_ruby/resources/ruby_runtime_test'
+eval_gemfile File.expand_path('../../../Gemfile', __FILE__)
 
-include_recipe 'build-essential'
-
-# Install lsb-release because Debian 6 doesn't by default and serverspec requires it
-package 'lsb-release' if platform?('debian') && node['platform_version'].start_with?('6')
-
-ruby_runtime_test 'chef' do
-  runtime_provider :chef
-end
-
-ruby_runtime_test 'system' do
-  version ''
-  runtime_provider :system
-end
-
-if platform_family?('rhel')
-  ruby_runtime_test 'scl' do
-    version ''
-    runtime_provider :scl
-  end
-else
-  file '/no_scl'
-end
+gem 'chef', '~> 12.3.0'
