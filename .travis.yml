@@ -6,6 +6,7 @@ rvm:
 env:
   global:
   - secure: YOM++OBAaAhRGG4IkODRzmscd0JAW1w5jnfTcpF1nV9pGFEicFGGneHANzT2FdNl/xU2BDzoQd46Wv5rSPb0C+Kw00qYyadTsyWaVVggHL60FLFWGpnFq29iApHnKA+HX5qoKGgtW5ZPczJlwumuZvr+pgstUOVYTk/RJqFy+vw=
+before_install: "gem install bundler"
 bundler_args: "--binstubs=$PWD/bin --jobs 3 --retry 3"
 script:
 - "./bin/rake travis"
