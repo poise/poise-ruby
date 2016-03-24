@@ -245,6 +245,21 @@ end
 * `package_version` – Override auto-detection of the package version.
 * `version` – Override the Ruby version.
 
+### `scl`
+
+The `scl` provider installs Ruby using the [Software Collections](https://www.softwarecollections.org/)
+packages. This is only available on RHEL and CentOS. SCL offers more
+recent versions of Ruby than the system packages for the most part. If an SCL
+package exists for the requested version, it will be used in preference to the
+`system` provider.
+
+```ruby
+ruby_runtime 'myapp' do
+  provider :scl
+  version '2.2'
+end
+```
+
 ### `chef`
 
 The `chef` provider uses the Ruby environment included in the Omnibus packages.
