@@ -66,7 +66,7 @@ describe 'bundle_install' do
       it { is_expected.to be_a_file }
     end
 
-    describe command('/opt/bundle3/bin/rake --version') do
+    describe command('scl enable rh-ruby22 "/opt/bundle3/bin/rake --version"') do
       its(:exit_status) { is_expected.to eq 0 }
     end
   end
