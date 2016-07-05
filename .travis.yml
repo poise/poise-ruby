@@ -2,7 +2,7 @@ sudo: false
 cache: bundler
 language: ruby
 rvm:
-- '2.2'
+- 2.3.1
 env:
   global:
   - secure: YOM++OBAaAhRGG4IkODRzmscd0JAW1w5jnfTcpF1nV9pGFEicFGGneHANzT2FdNl/xU2BDzoQd46Wv5rSPb0C+Kw00qYyadTsyWaVVggHL60FLFWGpnFq29iApHnKA+HX5qoKGgtW5ZPczJlwumuZvr+pgstUOVYTk/RJqFy+vw=
