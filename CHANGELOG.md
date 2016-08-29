@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.2.0
+
+* Add support for Ubuntu 16.04 system packages.
+* Support new SCL structure and packages.
+
 ## v2.1.1
 
 * Create ChefSpec matchers for the `ruby_gem` resource.
