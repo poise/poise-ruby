@@ -128,7 +128,7 @@ module PoiseRuby
         #
         # @return [String]
         def bundler_binary
-          @bundler_binary ||= ::File.join(gem_bindir, 'bundle')
+          @bundler_binary ||= ::File.join(poise_gem_bindir, 'bundle')
         end
 
         # Find the absolute path to the Gemfile. This mirrors bundler's internal
@@ -168,8 +168,12 @@ module PoiseRuby
         # the required configuration on the resource combined with gem having
         # terrible output formats.
         #
+        # Renamed from #gem_bindir in 2.3.0 because of a conflict with a method
+        # of the same name in Chef::Mixin::PathSanity (which is pulled in via
+        # ShellOut) added in 13.0.
+        #
         # @return [String]
-        def gem_bindir
+        def poise_gem_bindir
           cmd = ruby_shell_out!(new_resource.gem_binary, 'environment')
           # Parse a line like:
           # - EXECUTABLE DIRECTORY: /usr/local/bin
