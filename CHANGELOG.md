@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.3.0
+
+* Chef 13 support.
+
 ## v2.2.0
 
 * Add support for Ubuntu 16.04 system packages.
