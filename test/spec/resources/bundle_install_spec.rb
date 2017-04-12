@@ -116,7 +116,7 @@ EOH
     describe '#gem_bin' do
       let(:new_resource) { double('new_resource', gem_binary: '/usr/local/bin/gem', parent_ruby: nil, timeout: 900, ruby: '/usr/bin/ruby') }
       let(:gem_environment) { '' }
-      subject { provider.send(:gem_bindir) }
+      subject { provider.send(:poise_gem_bindir) }
       before do
         expect(provider).to receive(:ruby_shell_out!).with('/usr/local/bin/gem', 'environment').and_return(double(stdout: gem_environment))
       end
@@ -252,7 +252,7 @@ EOH
       let(:action) { '' }
       subject { provider.send(:bundler_command, action) }
       before do
-        allow(provider).to receive(:gem_bindir).and_return('/test')
+        allow(provider).to receive(:poise_gem_bindir).and_return('/test')
         allow(provider).to receive(:bundler_options).and_return(%w{--binstubs --deployment})
       end
 
