@@ -24,7 +24,7 @@ directory '/opt/bundle1'
 file '/opt/bundle1/Gemfile' do
   content <<-EOH
 source 'https://rubygems.org/'
-gem 'rake', '~> 10.0'
+gem 'rake', '~> 11.0'
 EOH
 end
 
