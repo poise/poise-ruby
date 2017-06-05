@@ -24,7 +24,7 @@ directory '/opt/bundle1'
 file '/opt/bundle1/Gemfile' do
   content <<-EOH
 source 'https://rubygems.org/'
-if RUBY_VERSION.start_with?('1.9')
+if RUBY_VERSION.start_with?('1.8')
   # CentOS 6 system packages.
   gem 'rake', '~> 10.0'
 else
