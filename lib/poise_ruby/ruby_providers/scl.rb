@@ -25,7 +25,8 @@ module PoiseRuby
     class Scl < Base
       include PoiseLanguages::Scl::Mixin
       provides(:scl)
-      scl_package('2.3.0', 'rh-ruby23', 'rh-ruby23-ruby-devel', '>= 7.0')
+      scl_package('2.4.0', 'rh-ruby24', 'rh-ruby24-ruby-devel')
+      scl_package('2.3.1', 'rh-ruby23', 'rh-ruby23-ruby-devel')
       scl_package('2.2.2', 'rh-ruby22', 'rh-ruby22-ruby-devel')
       # On EL7, the system package is Ruby 2.0.0 and is newer than the SCL build.
       scl_package('2.0.0', 'ruby200', 'ruby200-ruby-devel', '~> 6.0')
