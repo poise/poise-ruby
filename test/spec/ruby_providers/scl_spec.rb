@@ -45,7 +45,7 @@ describe PoiseRuby::RubyProviders::Scl do
 
   context 'with version ""' do
     let(:ruby_version) { '' }
-    it_behaves_like 'scl provider', 'rh-ruby23'
+    it_behaves_like 'scl provider', 'rh-ruby24'
   end # /context with version ""
 
   context 'with version "2.2"' do
@@ -53,16 +53,22 @@ describe PoiseRuby::RubyProviders::Scl do
     it_behaves_like 'scl provider', 'rh-ruby22'
   end # /context with version "2.2"
 
+  context 'with version "2.3"' do
+    let(:ruby_version) { '2.3' }
+    it_behaves_like 'scl provider', 'rh-ruby23'
+  end # /context with version "2.3"
+
+
   context 'with version "2"' do
     let(:ruby_version) { '2' }
-    it_behaves_like 'scl provider', 'rh-ruby23'
+    it_behaves_like 'scl provider', 'rh-ruby24'
   end # /context with version "2"
 
 
   context 'with version "" on CentOS 6' do
     let(:chefspec_options) { {platform: 'centos', version: '6.0'} }
     let(:ruby_version) { '' }
-    it_behaves_like 'scl provider', 'rh-ruby22'
+    it_behaves_like 'scl provider', 'rh-ruby24'
   end # /context with version "" on CentOS 6
 
   context 'action :uninstall' do
