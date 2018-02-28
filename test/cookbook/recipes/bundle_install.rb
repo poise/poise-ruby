@@ -16,7 +16,11 @@
 
 ruby_runtime 'bundle_install test' do
   version ''
-  provider :system
+  if platform_family?('rhel') && node['platform_version'].start_with?('6')
+    provider :scl
+  else
+    provider :system
+  end
 end
 
 directory '/opt/bundle1'

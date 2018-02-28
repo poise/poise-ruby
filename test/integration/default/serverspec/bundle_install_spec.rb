@@ -25,17 +25,22 @@ describe 'bundle_install' do
       when 'redhat'
         case os[:release]
         when /^6/
-          '/usr/bin/rake'
+          '/opt/rh/rh-ruby24/root/usr/local/bin/rake'
         else
           '/usr/local/bin/rake'
         end
       end
+    scl_prefix = if os[:family] == 'redhat' && os[:release] =~ /^6/
+      'scl enable rh-ruby24 -- '
+    else
+      ''
+    end
 
     describe file(rake_binary) do
       it { is_expected.to be_a_file }
     end
 
-    describe command("#{rake_binary} --version") do
+    describe command("#{scl_prefix}#{rake_binary} --version") do
       its(:exit_status) { is_expected.to eq 0 }
     end
   end

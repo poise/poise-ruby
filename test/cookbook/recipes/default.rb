@@ -29,9 +29,13 @@ ruby_runtime_test 'chef' do
   runtime_provider :chef
 end
 
-ruby_runtime_test 'system' do
-  version ''
-  runtime_provider :system
+if platform_family?('rhel') && node['platform_version'].start_with?('6')
+  file '/no_system'
+else
+  ruby_runtime_test 'system' do
+    version ''
+    runtime_provider :system
+  end
 end
 
 if platform_family?('rhel')
