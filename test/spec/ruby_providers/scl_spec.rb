@@ -18,7 +18,7 @@ require 'spec_helper'
 
 describe PoiseRuby::RubyProviders::Scl do
   let(:ruby_version) { '' }
-  let(:chefspec_options) { {platform: 'centos', version: '7.0'} }
+  let(:chefspec_options) { {platform: 'centos', version: '7.3.1611'} }
   let(:default_attributes) { {poise_ruby_version: ruby_version} }
   let(:ruby_runtime) { chef_run.ruby_runtime('test') }
   step_into(:ruby_runtime)
@@ -66,7 +66,7 @@ describe PoiseRuby::RubyProviders::Scl do
 
 
   context 'with version "" on CentOS 6' do
-    let(:chefspec_options) { {platform: 'centos', version: '6.0'} }
+    let(:chefspec_options) { {platform: 'centos', version: '6.8'} }
     let(:ruby_version) { '' }
     it_behaves_like 'scl provider', 'rh-ruby24'
   end # /context with version "" on CentOS 6
