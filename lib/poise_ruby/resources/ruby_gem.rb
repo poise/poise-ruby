@@ -21,6 +21,24 @@ require 'poise'
 require 'poise_ruby/ruby_command_mixin'
 
 
+# Monkey patch test
+if Gem::Version.new(Gem::VERSION) >= Gem::Version.new("2.7")
+  require 'chef/provider/package/rubygems'
+  Chef::Provider::Package::Rubygems::AlternateGemEnvironment.prepend(Module.new {
+    def installed_versions(gem_dep)
+      # Load installed stubs.
+      stubs = gem_specification.send(:installed_stubs, gem_specification.dirs, "#{gem_dep.name}-*.gemspec")
+      stubs.select! {|stub| stub.name == gem_dep.name }
+      stubs.uniq!(&:full_name)
+      stubs.select! {|stub| gem_dep.requirement.satisfied_by?(stub.version) }
+      stubs.sort_by! {|stub| stub.version }
+      stubs.reverse!
+      stubs
+    end
+  })
+end
+
+
 module PoiseRuby
   module Resources
     # (see RubyGem::Resource)
