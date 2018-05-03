@@ -33,6 +33,8 @@ describe PoiseRuby::Resources::RubyExecute do
     let(:parent_bundle) { nil }
     let(:new_resource) do
       double('new_resource',
+        name: 'test',
+        cookbook_name: 'test',
         command: command,
         environment: environment,
         ruby: ruby,

@@ -40,7 +40,7 @@ describe PoiseRuby::Resources::BundleInstall do
   end # /describe PoiseRuby::Resources::BundleInstall::Resource
 
   describe PoiseRuby::Resources::BundleInstall::Provider do
-    let(:new_resource) { double('new_resource', parent_ruby: nil, timeout: 900, ruby: '/usr/bin/ruby', user: nil) }
+    let(:new_resource) { double('new_resource', name: 'test', cookbook_name: 'test', parent_ruby: nil, timeout: 900, ruby: '/usr/bin/ruby', user: nil) }
     let(:provider) { described_class.new(new_resource, nil) }
 
     describe '#action_install' do
@@ -114,7 +114,7 @@ EOH
     end # /describe #run_bundler
 
     describe '#gem_bin' do
-      let(:new_resource) { double('new_resource', gem_binary: '/usr/local/bin/gem', parent_ruby: nil, timeout: 900, ruby: '/usr/bin/ruby') }
+      let(:new_resource) { double('new_resource', name: 'test', cookbook_name: 'test', gem_binary: '/usr/local/bin/gem', parent_ruby: nil, timeout: 900, ruby: '/usr/bin/ruby') }
       let(:gem_environment) { '' }
       subject { provider.send(:poise_gem_bindir) }
       before do
@@ -197,7 +197,7 @@ EOH
     end # /describe #gem_bin
 
     describe '#bundler_options' do
-      let(:default_options) { %i{binstubs deployment without jobs retry vendor}.inject({}) {|memo, v| memo[v] = nil; memo } }
+      let(:default_options) { %i{binstubs deployment without jobs retry vendor}.inject({name: 'test', cookbook_name: 'test'}) {|memo, v| memo[v] = nil; memo } }
       let(:options) { {} }
       let(:new_resource) { double('new_resource', default_options.merge(options)) }
       subject { provider.send(:bundler_options) }
@@ -270,7 +270,7 @@ EOH
     describe '#gemfile_path' do
       let(:path) { '' }
       let(:files) { [] }
-      let(:new_resource) { double('new_resource', path: path) }
+      let(:new_resource) { double('new_resource', name: 'test', cookbook_name: 'test', path: path) }
       subject { provider.send(:gemfile_path) }
       before do
         allow(File).to receive(:file?).and_return(false)
