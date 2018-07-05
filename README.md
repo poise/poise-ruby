@@ -217,6 +217,7 @@ will only be triggered if a gem is actually installed.
 * `vendor` – Enable local vendoring. This maps to the `--path` option in bundler,
   but that attribute name is already used.
 * `without` – Group or groups to not install.
+* `git_ssh` - GIT_SSH environment variable content.
 
 ## Ruby Providers
 
