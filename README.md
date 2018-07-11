@@ -4,7 +4,6 @@
 [![Gem Version](https://img.shields.io/gem/v/poise-ruby.svg)](https://rubygems.org/gems/poise-ruby)
 [![Cookbook Version](https://img.shields.io/cookbook/v/poise-ruby.svg)](https://supermarket.chef.io/cookbooks/poise-ruby)
 [![Coverage](https://img.shields.io/codecov/c/github/poise/poise-ruby.svg)](https://codecov.io/github/poise/poise-ruby)
-[![Gemnasium](https://img.shields.io/gemnasium/poise/poise-ruby.svg)](https://gemnasium.com/poise/poise-ruby)
 [![License](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 A [Chef](https://www.chef.io/) cookbook to provide a unified interface for
