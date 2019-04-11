@@ -25,6 +25,7 @@ module PoiseRuby
     class Scl < Base
       include PoiseLanguages::Scl::Mixin
       provides(:scl)
+      scl_package('2.5.0', 'rh-ruby25', 'rh-ruby25-ruby-devel')
       scl_package('2.4.0', 'rh-ruby24', 'rh-ruby24-ruby-devel')
       scl_package('2.3.1', 'rh-ruby23', 'rh-ruby23-ruby-devel')
       scl_package('2.2.2', 'rh-ruby22', 'rh-ruby22-ruby-devel')
